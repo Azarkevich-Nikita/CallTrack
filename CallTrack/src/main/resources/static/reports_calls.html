@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Отчеты по звонкам</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 800px;
+            text-align: center;
+        }
+        h1 {
+            color: #2c3e50;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+        .filter-section {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .filter-section label {
+            color: #34495e;
+            font-weight: 500;
+            margin-right: 10px;
+        }
+        .filter-section input, .filter-section select {
+            padding: 8px;
+            border: 2px solid #ecf0f1;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #3498db;
+            color: #fff;
+        }
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        .back-link {
+            display: block;
+            margin-top: 20px;
+            color: #7f8c8d;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .back-link:hover {
+            color: #3498db;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Отчеты по звонкам</h1>
+        <div class="filter-section">
+            <label for="phoneFilter">Номер клиента:</label>
+            <input type="text" id="phoneFilter" placeholder="Введите номер">
+            <label for="dateFilter">Месяц/Год:</label>
+            <input type="month" id="dateFilter" value="2025-09">
+        </div>
+        <table>
+            <tr>
+                <th>Дата</th>
+                <th>Тип звонка</th>
+                <th>Длительность (мин)</th>
+                <th>Стоимость (руб)</th>
+            </tr>
+            <tr>
+                <td>30.09.2025</td>
+                <td>Местный</td>
+                <td>15</td>
+                <td>0.00</td>
+            </tr>
+            <tr>
+                <td>29.09.2025</td>
+                <td>Международный</td>
+                <td>10</td>
+                <td>50.00</td>
+            </tr>
+        </table>
+        <a href="index.html" class="back-link">← Назад к главному меню</a>
+    </div>
+</body>
+</html>

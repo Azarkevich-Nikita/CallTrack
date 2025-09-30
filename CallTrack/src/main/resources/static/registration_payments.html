@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация платежей</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+        }
+        h1 {
+            color: #2c3e50;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .form-group label {
+            display: block;
+            color: #34495e;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ecf0f1;
+            border-radius: 5px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+        }
+        button {
+            background: #3498db;
+            color: #fff;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #2980b9;
+        }
+        .back-link {
+            display: block;
+            margin-top: 20px;
+            color: #7f8c8d;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .back-link:hover {
+            color: #3498db;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Регистрация платежей</h1>
+        <form>
+            <div class="form-group">
+                <label for="phone">Номер телефона</label>
+                <input type="text" id="phone" placeholder="Введите номер телефона" required>
+            </div>
+            <div class="form-group">
+                <label for="amount">Сумма платежа (руб)</label>
+                <input type="number" id="amount" placeholder="Введите сумму" min="0" required>
+            </div>
+            <div class="form-group">
+                <label for="date">Дата платежа</label>
+                <input type="date" id="date" value="2025-09-30" required>
+            </div>
+            <div class="form-group">
+                <label for="paymentType">Тип платежа</label>
+                <select id="paymentType" required>
+                    <option value="cash">Наличные</option>
+                    <option value="card">Карта</option>
+                    <option value="transfer">Перевод</option>
+                </select>
+            </div>
+            <button type="submit">Зарегистрировать платеж</button>
+        </form>
+        <a href="TRPO.html" class="back-link">← Назад к главному меню</a>
+    </div>
+</body>
+</html>
