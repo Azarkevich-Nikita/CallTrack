@@ -1,5 +1,6 @@
 package com.example.calltrack.Controller;
 
+import com.example.calltrack.Entity.Client;
 import com.example.calltrack.Service.ClientService;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,7 +15,7 @@ public class ClientController {
 
 
     @GetMapping("/clients/{number}")
-    public String getClientByNumber(@PathVariable String number) {
+    public Client getClientByNumber(@PathVariable String number) {
         return clientService.getClientByNumber(number);
     }
 }

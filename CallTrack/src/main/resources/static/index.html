@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Система учета оператора мобильной связи</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            width: 80%;
+            background-color: #fff;
+            padding: 20px;
+            border: 2px solid #000;
+            text-align: center;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .search-section, .date-section, .client-section {
+            margin-bottom: 20px;
+        }
+        .search-section input[type="text"] {
+            padding: 5px;
+            width: 200px;
+            margin-right: 10px;
+        }
+        .button-section {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .button {
+            padding: 10px 20px;
+            background-color: #d3d3d3;
+            border: 1px solid #000;
+            cursor: pointer;
+            width: 200px;
+            margin: 5px;
+        }
+        .button.highlight {
+            background-color: #a9a9a9;
+        }
+        .date {
+            font-size: 14px;
+            color: #555;
+        }
+        .client {
+            font-size: 14px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Система учета оператора мобильной связи</h1>
+    <div class="header">
+        <div class="search-section">
+            <label for="phoneInput">Поиск клиента</label><br>
+            <input type="text" id="phoneInput" placeholder="Введите номер телефона">
+            <button class="button highlight" id="searchBtn">Найти</button>
+        </div>
+        <div class="date-section">
+            <span class="date">Текущая дата</span><br>
+            <span class="date" id="currentDate"></span>
+        </div>
+        <div class="client-section">
+            <span class="client">Клиент</span><br>
+            <span class="client" id="clientInfo">.........</span>
+        </div>
+    </div>
+    <div class="button-section">
+        <div class="button">Регистрация платежей</div>
+        <div class="button">Отчеты по оплатам</div>
+        <div class="button">Регистрация звонков</div>
+        <div class="button">Отчеты по звонкам</div>
+        <div class="button">Отчет о должниках</div>
+        <div class="button">Уведомления о задолженности</div>
+        <div class="button">Отчет по звонкам</div>
+        <div class="button">Уведомления о задолженностях</div>
+    </div>
+</div>
+
+<script>
+    function updateDate() {
+        const now = new Date();
+        const dateString = now.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        document.getElementById('currentDate').textContent = dateString;
+    }
+    window.onload = updateDate;
+    setInterval(updateDate, 60000);
+</script>
+<script src="/scripts/clientSearch.js"></script>
+</body>
+</html>
