@@ -1,0 +1,484 @@
+/* Стили для страницы регистрации */
+
+.registration-container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.registration-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    padding: 32px;
+    margin-bottom: 24px;
+}
+
+.registration-header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.registration-header h2 {
+    font-size: 28px;
+    margin: 0 0 8px 0;
+    color: var(--text);
+}
+
+.registration-header p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 16px;
+}
+
+.registration-form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-label {
+    font-weight: 600;
+    color: var(--text);
+    font-size: 14px;
+}
+
+.input-container {
+    position: relative;
+}
+
+.form-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 16px;
+    background: #ffffff;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    box-sizing: border-box;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--brand);
+    box-shadow: 0 0 0 3px rgba(42, 125, 225, 0.1);
+}
+
+.form-input:invalid {
+    border-color: var(--border);
+}
+
+.input-hint {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 4px;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--muted);
+    padding: 4px;
+    border-radius: 4px;
+    transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.password-toggle:hover {
+    color: var(--text);
+    background-color: #f3f4f6;
+}
+
+/* Индикатор силы пароля */
+.password-strength {
+    margin-top: 8px;
+}
+
+.strength-bar {
+    width: 100%;
+    height: 4px;
+    background-color: #e5e7eb;
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 4px;
+}
+
+.strength-fill {
+    height: 100%;
+    width: 0%;
+    transition: width 0.3s ease, background-color 0.3s ease;
+    border-radius: 2px;
+}
+
+.strength-fill.weak {
+    width: 33%;
+    background-color: var(--error);
+}
+
+.strength-fill.medium {
+    width: 66%;
+    background-color: var(--warning);
+}
+
+.strength-fill.strong {
+    width: 100%;
+    background-color: var(--success);
+}
+
+.strength-text {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+/* Селектор типа регистрации */
+.registration-type-selector {
+    display: flex;
+    gap: 16px;
+    margin-top: 8px;
+}
+
+.radio-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 12px 16px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: #ffffff;
+    transition: all 0.2s ease;
+    flex: 1;
+}
+
+.radio-option:hover {
+    border-color: var(--brand);
+    background-color: #f8fafc;
+}
+
+.radio-option input[type="radio"] {
+    display: none;
+}
+
+.radio-custom {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--border);
+    border-radius: 50%;
+    position: relative;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.radio-option input[type="radio"]:checked + .radio-custom {
+    border-color: var(--brand);
+    background-color: var(--brand);
+}
+
+.radio-option input[type="radio"]:checked + .radio-custom::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    background-color: white;
+    border-radius: 50%;
+}
+
+.radio-text {
+    font-size: 14px;
+    color: var(--text);
+    font-weight: 500;
+}
+
+/* Секции регистрации */
+.registration-section {
+    transition: all 0.3s ease;
+}
+
+/* Google OAuth */
+.google-auth-container {
+    text-align: center;
+    padding: 24px;
+    background: none
+}
+
+.google-auth-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 24px;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.google-auth-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-color: #d1d5db;
+}
+
+.google-hint {
+    margin: 12px 0 0 0;
+    font-size: 14px;
+    color: var(--muted);
+}
+
+/* Селектор роли */
+.role-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.role-selector .radio-option {
+    padding: 16px;
+    align-items: flex-start;
+}
+
+.role-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-left: 8px;
+}
+
+.role-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.role-description {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.4;
+}
+
+/* Чекбокс согласия */
+.checkbox-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    cursor: pointer;
+    padding: 8px 0; /* убрал отступы и рамку */
+    border: none;
+    background: transparent;
+    transition: all 0.2s ease;
+}
+
+.checkbox-option:hover {
+    background-color: transparent;
+}
+
+.checkbox-option input[type="checkbox"] {
+    display: none;
+}
+
+.checkbox-custom {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--border);
+    border-radius: 4px;
+    position: relative;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.checkbox-option input[type="checkbox"]:checked + .checkbox-custom {
+    border-color: var(--brand);
+    background-color: var(--brand);
+}
+
+.checkbox-option input[type="checkbox"]:checked + .checkbox-custom::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 6px;
+    width: 6px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.checkbox-text {
+    font-size: 13px; /* немного меньше */
+    color: var(--text);
+    line-height: 1.5;
+}
+
+.link {
+    color: var(--brand);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.link:hover {
+    text-decoration: underline;
+}
+
+/* Кнопки */
+.form-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 18px; /* уменьшена высота */
+    border: none;
+    border-radius: 8px;
+    font-size: 15px; /* немного меньше */
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    position: relative;
+    min-height: 44px; /* ниже кнопка */
+}
+
+.btn-primary {
+    background-color: var(--brand);
+    color: white;
+    box-shadow: 0 2px 4px rgba(42, 125, 225, 0.2);
+}
+
+.btn-primary:hover {
+    background-color: var(--brand-600);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(42, 125, 225, 0.3);
+}
+
+.btn-primary:disabled {
+    background-color: #9ca3af;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.btn-secondary {
+    background-color: transparent;
+    color: var(--brand);
+    border: none; /* убрал рамку */
+    padding: 8px 14px; /* компактнее вторичная кнопка */
+    font-size: 14px;
+}
+
+.btn-secondary:hover {
+    background-color: transparent;
+    color: var(--brand-600);
+    text-decoration: underline;
+}
+
+.btn-loading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Сообщения об ошибках */
+.error-message {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: var(--error);
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-top: 8px;
+    display: none;
+}
+
+.error-message.show {
+    display: block;
+}
+
+.success-message {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    color: var(--success);
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-top: 8px;
+    display: none;
+}
+
+.success-message.show {
+    display: block;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .registration-card {
+        padding: 24px;
+        margin: 0 16px 24px 16px;
+    }
+    
+    .registration-type-selector {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .role-selector .radio-option {
+        padding: 12px;
+    }
+    
+    .checkbox-option {
+        padding: 12px;
+    }
+    
+    .btn {
+        padding: 12px 20px;
+        font-size: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .registration-card {
+        padding: 20px;
+        margin: 0 8px 24px 8px;
+    }
+    
+    .registration-header h2 {
+        font-size: 24px;
+    }
+    
+    .form-input {
+        font-size: 16px; /* Предотвращает зум на iOS */
+    }
+}
