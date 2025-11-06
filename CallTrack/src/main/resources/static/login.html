@@ -5,12 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Вход - CallTrack</title>
     
-    <!-- Подключение стилей -->
     <link rel="stylesheet" href="styles/common.css">
     <link rel="stylesheet" href="styles/registration.css">
+    <style>
+        .auth-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #dbeafe, #e0e7ff);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+        .auth-icon img { width: 28px; height: 28px; }
+        .login-links { display: flex; justify-content: flex-end; }
+        .divider { position: relative; text-align: center; color: var(--muted); font-size: 12px; margin: 12px 0; }
+        .divider::before, .divider::after { content: ""; position: absolute; top: 50%; width: calc(50% - 70px); height: 1px; background: var(--border); }
+        .divider::before { left: 0; }
+        .divider::after { right: 0; }
+        /* Компактнее вертикальные интервалы формы на странице входа */
+        .registration-form { gap: 16px; }
+        /* Ряд с чекбоксом и ссылкой */
+        .form-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+        .form-row .form-group { margin: 0; }
+        .checkbox-option { align-items: center; padding: 0; }
+    </style>
 </head>
 <body>
-    <!-- Шапка сайта -->
     <header class="site-header">
         <nav class="nav">
             <div class="left">
@@ -25,30 +48,17 @@
         </nav>
     </header>
 
-    <!-- Основной контент -->
     <div class="container">
-        <!-- Заголовок страницы -->
-        <div class="page-header">
-            <a href="index.html" class="back-link">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                Назад к главной
-            </a>
-            <h1 class="page-title">Вход в систему</h1>
-            <p class="page-subtitle">Войдите в свой аккаунт для доступа к системе учета</p>
-        </div>
-
-        <!-- Форма входа -->
         <div class="registration-container">
             <div class="registration-card">
                 <div class="registration-header">
+                    <div class="auth-icon">
+                        <img src="assets/images/logo-operator.svg" alt="Auth">
+                    </div>
                     <h2>Войти в аккаунт</h2>
-                    <p>Введите свои данные для входа в систему</p>
                 </div>
 
                 <form id="loginForm" class="registration-form">
-                    <!-- Поле входа (логин/почта/телефон) -->
                     <div class="form-group">
                         <label for="loginInput" class="form-label">Логин, email или номер телефона</label>
                         <div class="input-container">
@@ -56,7 +66,6 @@
                         </div>
                     </div>
 
-                    <!-- Пароль -->
                     <div class="form-group">
                         <label for="passwordInput" class="form-label">Пароль</label>
                         <div class="input-container">
@@ -70,16 +79,19 @@
                         </div>
                     </div>
 
-                    <!-- Запомнить меня -->
-                    <div class="form-group">
-                        <label class="checkbox-option">
-                            <input type="checkbox" id="rememberMe" name="rememberMe">
-                            <span class="checkbox-custom"></span>
-                            <span class="checkbox-text">Запомнить меня</span>
-                        </label>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="checkbox-option">
+                                <input type="checkbox" id="rememberMe" name="rememberMe">
+                                <span class="checkbox-custom"></span>
+                                <span class="checkbox-text">Запомнить меня</span>
+                            </label>
+                        </div>
+                        <div class="login-links">
+                            <a href="#" class="link">Забыли пароль?</a>
+                        </div>
                     </div>
 
-                    <!-- Кнопки -->
                     <div class="form-actions">
                         <button type="submit" class="btn btn-primary" id="submitBtn">
                             <span class="btn-text">Войти</span>
@@ -93,7 +105,11 @@
                                 Вход...
                             </div>
                         </button>
+                        
                         <a href="registration.html" class="btn btn-secondary">Нет аккаунта? Зарегистрироваться</a>
+                        
+                        <div class="divider"><span>или войдите через</span></div>
+                        
                         <div class="google-auth-container" style="margin-top: 8px;">
                             <button type="button" class="google-auth-btn" id="googleLoginBtn">
                                 <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -107,16 +123,11 @@
                         </div>
                     </div>
 
-                    <!-- Дополнительные ссылки -->
-                    <div class="login-links">
-                        <a href="#" class="link">Забыли пароль?</a>
-                    </div>
                 </form>
             </div>
         </div>
     </div>
 
-    <!-- Подключение скриптов -->
     <script src="scripts/login.js"></script>
 </body>
 </html>

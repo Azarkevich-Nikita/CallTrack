@@ -1,8 +1,7 @@
-/* Стили для страницы регистрации */
-
 .registration-container {
-    max-width: 600px;
+    max-width: 590px;
     margin: 0 auto;
+    max-height: 100vh;
 }
 
 .registration-card {
@@ -16,11 +15,13 @@
 
 .registration-header {
     text-align: center;
-    margin-bottom: 32px;
+    margin-top: 0px;
+    margin-bottom: 30px;
 }
 
 .registration-header h2 {
-    font-size: 28px;
+    font-size: 30px;
+    font-weight: 700;
     margin: 0 0 8px 0;
     color: var(--text);
 }
@@ -40,12 +41,13 @@
 .form-group {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 5px;
+    margin-top: 25px;
 }
 
 .form-label {
     font-weight: 600;
-    color: var(--text);
+    color: rgb(103, 105, 111);;
     font-size: 14px;
 }
 
@@ -99,7 +101,6 @@
     background-color: #f3f4f6;
 }
 
-/* Индикатор силы пароля */
 .password-strength {
     margin-top: 8px;
 }
@@ -140,7 +141,6 @@
     color: var(--muted);
 }
 
-/* Селектор типа регистрации */
 .registration-type-selector {
     display: flex;
     gap: 16px;
@@ -202,15 +202,13 @@
     font-weight: 500;
 }
 
-/* Секции регистрации */
 .registration-section {
     transition: all 0.3s ease;
 }
 
-/* Google OAuth */
 .google-auth-container {
     text-align: center;
-    padding: 24px;
+    padding: 0px;
     background: none
 }
 
@@ -218,7 +216,7 @@
     display: inline-flex;
     align-items: center;
     gap: 12px;
-    padding: 12px 24px;
+    padding: 20px;
     background: #ffffff;
     border: 1px solid var(--border);
     border-radius: 8px;
@@ -242,48 +240,21 @@
     color: var(--muted);
 }
 
-/* Селектор роли */
-.role-selector {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-top: 8px;
-}
-
-.role-selector .radio-option {
-    padding: 16px;
-    align-items: flex-start;
-}
-
-.role-info {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    margin-left: 8px;
-}
-
-.role-title {
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--text);
-}
-
-.role-description {
-    font-size: 14px;
-    color: var(--muted);
-    line-height: 1.4;
-}
-
-/* Чекбокс согласия */
 .checkbox-option {
     display: flex;
     align-items: flex-start;
-    gap: 12px;
+    gap: 8px;
     cursor: pointer;
-    padding: 8px 0; /* убрал отступы и рамку */
+    padding: 0px;
     border: none;
     background: transparent;
     transition: all 0.2s ease;
+}
+
+/* Сжать вертикальные отступы у блока с чекбоксом (перекрываем общий gap) */
+.form-group.checkbox-group {
+    margin-top: -8px;   /* уменьшает отступ сверху */
+    margin-bottom: -8px;/* уменьшает отступ снизу */
 }
 
 .checkbox-option:hover {
@@ -295,14 +266,13 @@
 }
 
 .checkbox-custom {
-    width: 20px;
-    height: 20px;
+    width: 14px;
+    height: 14px;
     border: 2px solid var(--border);
     border-radius: 4px;
     position: relative;
     transition: all 0.2s ease;
     flex-shrink: 0;
-    margin-top: 1px;
 }
 
 .checkbox-option input[type="checkbox"]:checked + .checkbox-custom {
@@ -323,7 +293,7 @@
 }
 
 .checkbox-text {
-    font-size: 13px; /* немного меньше */
+    font-size: 14px;
     color: var(--text);
     line-height: 1.5;
 }
@@ -332,18 +302,18 @@
     color: var(--brand);
     text-decoration: none;
     font-weight: 500;
+    font-size: 14px;
 }
 
 .link:hover {
     text-decoration: underline;
 }
 
-/* Кнопки */
 .form-actions {
     display: flex;
     flex-direction: column;
     gap: 12px;
-    margin-top: 8px;
+    margin-top: 20px;
 }
 
 .btn {
@@ -351,16 +321,16 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-    padding: 10px 18px; /* уменьшена высота */
+    padding: 16px 18px;
     border: none;
     border-radius: 8px;
-    font-size: 15px; /* немного меньше */
+    font-size: 15px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
     text-decoration: none;
     position: relative;
-    min-height: 44px; /* ниже кнопка */
+    min-height: 44px;
 }
 
 .btn-primary {
@@ -385,8 +355,8 @@
 .btn-secondary {
     background-color: transparent;
     color: var(--brand);
-    border: none; /* убрал рамку */
-    padding: 8px 14px; /* компактнее вторичная кнопка */
+    border: none;
+    padding: 0px 14px;
     font-size: 14px;
 }
 
@@ -411,7 +381,6 @@
     to { transform: rotate(360deg); }
 }
 
-/* Сообщения об ошибках */
 .error-message {
     background: #fef2f2;
     border: 1px solid #fecaca;
@@ -442,7 +411,6 @@
     display: block;
 }
 
-/* Адаптивность */
 @media (max-width: 768px) {
     .registration-card {
         padding: 24px;
@@ -479,6 +447,31 @@
     }
     
     .form-input {
-        font-size: 16px; /* Предотвращает зум на iOS */
+        font-size: 16px;
     }
 }
+
+.divider {
+    margin: 18px 0 15px;
+    text-align: center;
+    font-size: 14px;
+    position: relative;
+  }
+  
+  .divider span {
+    background: white;
+    padding: 0 10px;
+    position: relative;
+    z-index: 1;
+  }
+  
+  .divider::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background-color: #ccc;
+    z-index: 0;
+  }
