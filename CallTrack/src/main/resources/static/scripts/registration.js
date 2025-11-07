@@ -3,12 +3,16 @@ class RegistrationManager {
     constructor() {
         this.form = document.getElementById('registrationForm');
         this.submitBtn = document.getElementById('submitBtn');
+        this.fullNameInput = document.getElementById('fullNameInput');
+        this.emailInput = document.getElementById('emailInput');
+        this.birthDateInput = document.getElementById('birthDateInput');
         this.passwordInput = document.getElementById('passwordInput');
         this.confirmPasswordInput = document.getElementById('confirmPasswordInput');
         this.passwordToggle = document.getElementById('passwordToggle');
         this.confirmPasswordToggle = document.getElementById('confirmPasswordToggle');
         this.strengthFill = document.getElementById('strengthFill');
         this.strengthText = document.getElementById('strengthText');
+        this.notificationModal = document.getElementById('notificationModal');
         
         this.init();
     }
@@ -30,6 +34,8 @@ class RegistrationManager {
         }
 
         // Валидация в реальном времени
+        this.fullNameInput.addEventListener('input', () => this.validateFullName());
+        this.emailInput.addEventListener('input', () => this.validateEmail());
         this.passwordInput.addEventListener('input', () => this.validatePassword());
         this.confirmPasswordInput.addEventListener('input', () => this.validatePasswordMatch());
     }
@@ -52,7 +58,6 @@ class RegistrationManager {
         });
     }
 
-    // тип регистрации убран
 
     togglePasswordVisibility(input, toggle) {
         const isPassword = input.type === 'password';
@@ -60,13 +65,11 @@ class RegistrationManager {
         
         const icon = toggle.querySelector('svg');
         if (isPassword) {
-            // Показать иконку "скрыть"
             icon.innerHTML = `
                 <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 <line x1="1" y1="1" x2="23" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
             `;
         } else {
-            // Показать иконку "показать"
             icon.innerHTML = `
                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2"/>
                 <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
@@ -103,7 +106,6 @@ class RegistrationManager {
         const password = this.passwordInput.value;
         const isValid = password.length >= 8;
         
-        // Убрал добавление класса invalid для полей
         return isValid;
     }
 
@@ -111,27 +113,46 @@ class RegistrationManager {
         const password = this.passwordInput.value;
         const confirmPassword = this.confirmPasswordInput.value;
         const isValid = password === confirmPassword && confirmPassword.length > 0;
-        
-        // Убрал добавление класса invalid для полей
+
         return isValid;
+    }
+
+    validateFullName() {
+        const fullName = this.fullNameInput.value.trim();
+        return fullName.length >= 2;
+    }
+
+    validateEmail() {
+        const email = this.emailInput.value.trim();
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
     }
 
     validateForm() {
         let isValid = true;
 
-        // Очистка предыдущих ошибок
         this.clearErrors();
 
-        const login = document.getElementById('loginInput').value.trim();
+        const fullName = this.fullNameInput.value.trim();
+        const email = this.emailInput.value.trim();
+        const birthDate = this.birthDateInput.value;
         const password = this.passwordInput.value;
         const confirmPassword = this.confirmPasswordInput.value;
         const agreeTerms = document.getElementById('agreeTerms').checked;
 
-        if (!login) {
-            this.showError('loginInput', 'Введите логин, email или номер телефона');
+        if (!fullName) {
+            this.showError('fullNameInput', 'Введите полное имя');
             isValid = false;
-        } else if (!this.validateLoginFormat(login)) {
-            this.showError('loginInput', 'Неверный формат логина, email или номера телефона');
+        } else if (!this.validateFullName()) {
+            this.showError('fullNameInput', 'Полное имя должно содержать минимум 2 символа');
+            isValid = false;
+        }
+
+        if (!email) {
+            this.showError('emailInput', 'Введите email');
+            isValid = false;
+        } else if (!this.validateEmail()) {
+            this.showError('emailInput', 'Неверный формат email');
             isValid = false;
         }
 
@@ -159,17 +180,6 @@ class RegistrationManager {
         return isValid;
     }
 
-    validateLoginFormat(login) {
-        // Проверка на email
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        // Проверка на номер телефона (российский формат)
-        const phoneRegex = /^(\+7|7|8)?[\s\-]?\(?[489][0-9]{2}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}$/;
-        // Проверка на логин (буквы, цифры, подчеркивания, минимум 3 символа)
-        const loginRegex = /^[a-zA-Z0-9_]{3,}$/;
-
-        return emailRegex.test(login) || phoneRegex.test(login) || loginRegex.test(login);
-    }
-
     showError(fieldId, message) {
         const field = document.getElementById(fieldId);
         const errorDiv = document.createElement('div');
@@ -178,54 +188,61 @@ class RegistrationManager {
         errorDiv.id = `error-${fieldId}`;
         
         field.parentNode.appendChild(errorDiv);
-        // Убрал добавление класса invalid для полей
     }
 
     clearErrors() {
-        // Удаление всех сообщений об ошибках
         const errorMessages = document.querySelectorAll('.error-message');
         errorMessages.forEach(msg => msg.remove());
 
-        // Убрал удаление класса invalid с полей
     }
 
     async handleSubmit(e) {
         e.preventDefault();
+        e.stopPropagation();
 
         if (!this.validateForm()) {
-            return;
+            return false;
         }
 
         this.setLoading(true);
 
         try {
-            let response = await this.submitStandardRegistration();
-
-            if (response.success) {
-                this.showSuccess('Регистрация успешно завершена! Перенаправление...');
-                // Перенаправление на главную страницу через 2 секунды
-                setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 2000);
-            } else {
-                this.showError('submitBtn', response.message || 'Ошибка при регистрации');
-            }
+            const message = await this.submitStandardRegistration();
+            
+            this.showNotification(message, true);
         } catch (error) {
             console.error('Ошибка регистрации:', error);
-            this.showError('submitBtn', 'Произошла ошибка при регистрации. Попробуйте еще раз.');
+            
+            let errorMessage = 'Произошла ошибка при регистрации. Попробуйте еще раз.';
+            
+            if (error.message) {
+                errorMessage = error.message;
+            } else if (typeof error === 'string') {
+                errorMessage = error;
+            }
+            
+            this.showNotification(errorMessage, false);
         } finally {
             this.setLoading(false);
         }
+        
+        return false;
     }
 
     async submitStandardRegistration() {
+        const fullName = this.fullNameInput.value.trim();
+        const email = this.emailInput.value.trim();
+        const birthDate = this.birthDateInput.value || null;
+        const password = this.passwordInput.value;
+        
         const formData = {
-            login: document.getElementById('loginInput').value.trim(),
-            password: this.passwordInput.value
+            fullName: fullName,
+            email: email,
+            password: password,
+            birthDate: birthDate
         };
 
-        // TODO: Заменить на реальный URL API
-        const response = await fetch('/api/auth/register', {
+        const response = await fetch('/api/v1/auth/register', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -233,17 +250,42 @@ class RegistrationManager {
             body: JSON.stringify(formData)
         });
 
+        const responseText = await response.text();
+        const contentType = response.headers.get('content-type');
+        const isJson = contentType && contentType.includes('application/json');
+        
         if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+            let errorMessage = `Ошибка регистрации. Код: ${response.status}`;
+            
+            try {
+                if (isJson && responseText) {
+                    const errorData = JSON.parse(responseText);
+                    errorMessage = errorData.message || (typeof errorData === 'string' ? errorData : errorMessage);
+                } else if (responseText) {
+                    errorMessage = responseText;
+                }
+            } catch (e) {
+                if (responseText) {
+                    errorMessage = responseText;
+                }
+            }
+            
+            throw new Error(errorMessage);
         }
 
-        return await response.json();
+        if (isJson && responseText) {
+            try {
+                const data = JSON.parse(responseText);
+                return typeof data === 'string' ? data : (data.message || 'Регистрация успешно завершена!');
+            } catch (e) {
+                return responseText || 'Регистрация успешно завершена!';
+            }
+        } else {
+            return responseText || 'Регистрация успешно завершена!';
+        }
     }
 
     async submitGoogleRegistration(role) {
-        // TODO: Реализовать Google OAuth
-        // Пока что возвращаем заглушку
         return new Promise((resolve) => {
             setTimeout(() => {
                 resolve({
@@ -255,7 +297,6 @@ class RegistrationManager {
     }
 
     async handleGoogleAuth() {
-        // TODO: Реализовать Google OAuth
         console.log('Google OAuth не реализован');
         alert('Google OAuth пока не реализован. Используйте стандартную регистрацию.');
     }
@@ -275,24 +316,65 @@ class RegistrationManager {
         }
     }
 
+    showNotification(message, isSuccess) {
+        const modal = document.getElementById('notificationModal');
+        if (!modal) {
+            console.error('Модальное окно не найдено!');
+            return;
+        }
+        
+        const content = modal.querySelector('.notification-content');
+        const messageDiv = modal.querySelector('.notification-message');
+        const closeBtn = document.getElementById('notificationClose');
+
+        if (!content || !messageDiv) {
+            console.error('Элементы модального окна не найдены!');
+            return;
+        }
+
+        // Убираем старые классы
+        content.classList.remove('success', 'error');
+        
+        // Добавляем нужный класс
+        content.classList.add(isSuccess ? 'success' : 'error');
+        
+        // Устанавливаем сообщение
+        messageDiv.textContent = message || (isSuccess ? 'Операция выполнена успешно' : 'Произошла ошибка');
+        
+        // Показываем модальное окно
+        modal.classList.add('show');
+
+        // Функция закрытия
+        const closeHandler = () => {
+            modal.classList.remove('show');
+        };
+
+        // Удаляем старые обработчики и добавляем новый
+        if (closeBtn) {
+            const newCloseBtn = closeBtn.cloneNode(true);
+            closeBtn.parentNode.replaceChild(newCloseBtn, closeBtn);
+            newCloseBtn.addEventListener('click', closeHandler);
+        }
+
+        // Автоматически скрыть через 5 секунд (если успех) или 7 секунд (если ошибка)
+        const timeout = isSuccess ? 5000 : 7000;
+        const timeoutId = setTimeout(() => {
+            if (modal.classList.contains('show')) {
+                closeHandler();
+            }
+        }, timeout);
+
+        // Сохраняем timeout ID для возможной очистки
+        modal._timeoutId = timeoutId;
+    }
+
     showSuccess(message) {
-        const successDiv = document.createElement('div');
-        successDiv.className = 'success-message show';
-        successDiv.textContent = message;
-        
-        this.form.appendChild(successDiv);
-        
-        // Автоматически скрыть через 5 секунд
-        setTimeout(() => {
-            successDiv.remove();
-        }, 5000);
+        this.showNotification(message, true);
     }
 }
 
-// Инициализация при загрузке страницы
 document.addEventListener('DOMContentLoaded', () => {
     new RegistrationManager();
 });
 
-// Экспорт для возможного использования в других модулях
 window.RegistrationManager = RegistrationManager;

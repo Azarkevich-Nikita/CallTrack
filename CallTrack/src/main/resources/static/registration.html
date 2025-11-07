@@ -48,12 +48,26 @@
                     <h2>Создать аккаунт</h2>
                 </div>
 
-                <form id="registrationForm" class="registration-form">
+                <form id="registrationForm" class="registration-form" onsubmit="return false;">
                     <div class="registration-section">
                         <div class="form-group">
-                            <label for="loginInput" class="form-label">Логин, email или номер телефона</label>
+                            <label for="fullNameInput" class="form-label">Полное имя</label>
                             <div class="input-container">
-                                <input type="text" id="loginInput" name="login" class="form-input" placeholder="Введите логин, email или номер телефона" required>
+                                <input type="text" id="fullNameInput" name="fullName" class="form-input" placeholder="Введите полное имя" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="emailInput" class="form-label">Email (логин)</label>
+                            <div class="input-container">
+                                <input type="email" id="emailInput" name="email" class="form-input" placeholder="Введите email" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="birthDateInput" class="form-label">Дата рождения</label>
+                            <div class="input-container">
+                                <input type="date" id="birthDateInput" name="birthDate" class="form-input">
                             </div>
                         </div>
 
@@ -131,6 +145,15 @@
                     </div>
                 </form>
             </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для уведомлений -->
+    <div id="notificationModal" class="notification-modal">
+        <div class="notification-content">
+            <div class="notification-icon"></div>
+            <div class="notification-message"></div>
+            <button class="notification-close" id="notificationClose">&times;</button>
         </div>
     </div>
 
