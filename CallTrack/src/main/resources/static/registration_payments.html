@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация платежей - CallTrack</title>
+    
+    <link rel="stylesheet" href="styles/common.css">
+    <link rel="stylesheet" href="styles/registration.css">
+    <style> 
+        .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 16px;
+            background: #ffffff;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            box-sizing: border-box;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 40px;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: var(--brand);
+            box-shadow: 0 0 0 3px rgba(42, 125, 225, 0.1);
+        }
+
+        .form-select option {
+            padding: 8px;
+        }
+
+        .payment-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #dbeafe, #e0e7ff);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .payment-icon img {
+            width: 32px;
+            height: 32px;
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <nav class="nav">
+            <div class="left">
+                <img src="assets/images/logo-operator.svg" alt="Logo">
+                <span class="brand-name">CallTrack</span>
+            </div>
+            <div class="right">
+                <a href="index.html">Главная</a>
+                <a href="tariffs.html">Тарифы</a>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+
+        <div class="registration-container">
+            <div class="registration-card">
+                <div class="registration-header">
+                    <div class="payment-icon">
+                        <img src="assets/images/payment.svg" alt="Платеж">
+                    </div>
+                    <h2>Зачисление платежа</h2>
+                    <p>Заполните данные для регистрации платежа</p>
+                </div>
+
+                <form id="paymentForm" class="registration-form">
+                    <div class="form-group">
+                        <label for="phone" class="form-label">Номер телефона</label>
+                        <div class="input-container">
+                            <input type="text" id="phone" name="phone" class="form-input" placeholder="Введите номер телефона" required>
+                        </div>
+                        <div class="input-hint">Пример: +375 (12) 345-64-89</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="amount" class="form-label">Сумма платежа (руб)</label>
+                        <div class="input-container">
+                            <input type="number" id="amount" name="amount" class="form-input" placeholder="Введите сумму" min="0" step="0.01" required>
+                        </div>
+                        <div class="input-hint">Минимальная сумма: 0.01 руб</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="date" class="form-label">Дата платежа</label>
+                        <div class="input-container">
+                            <input type="date" id="date" name="date" class="form-input" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="paymentType" class="form-label">Тип платежа</label>
+                        <select id="paymentType" name="paymentType" class="form-select" required>
+                            <option value="">Выберите тип платежа</option>
+                            <option value="cash">Наличные</option>
+                            <option value="card">Карта</option>
+                            <option value="transfer">Перевод</option>
+                        </select>
+                        <div class="input-hint">Выберите способ оплаты</div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right: 8px;">
+                                <path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            Зарегистрировать платеж
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const dateInput = document.getElementById('date');
+            if (dateInput && !dateInput.value) {
+                const today = new Date();
+                const year = today.getFullYear();
+                const month = String(today.getMonth() + 1).padStart(2, '0');
+                const day = String(today.getDate()).padStart(2, '0');
+                dateInput.value = `${year}-${month}-${day}`;
+            }
+        });
+    </script>
+</body>
+</html>

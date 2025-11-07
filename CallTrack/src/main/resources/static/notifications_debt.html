@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Уведомления о задолженности</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+        }
+        h1 {
+            color: #2c3e50;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+        .notification {
+            background: #fff3f3;
+            padding: 15px;
+            border-left: 4px solid #e74c3c;
+            margin-bottom: 15px;
+            text-align: left;
+            border-radius: 5px;
+        }
+        .notification p {
+            color: #34495e;
+            margin: 5px 0;
+        }
+        button {
+            background: #e74c3c;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #c0392b;
+        }
+        .back-link {
+            display: block;
+            margin-top: 20px;
+            color: #7f8c8d;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .back-link:hover {
+            color: #3498db;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Уведомления о задолженности</h1>
+        <div class="notification">
+            <p>Клиент: +7 (999) 123-45-67</p>
+            <p>Задолженность: 200.00 руб</p>
+            <p>Дата последнего платежа: 20.09.2025</p>
+            <button>Отправить уведомление</button>
+        </div>
+        <div class="notification">
+            <p>Клиент: +7 (999) 123-45-68</p>
+            <p>Задолженность: 150.00 руб</p>
+            <p>Дата последнего платежа: 15.09.2025</p>
+            <button>Отправить уведомление</button>
+        </div>
+        <a href="index.html" class="back-link">← Назад к главному меню</a>
+    </div>
+</body>
+</html>

@@ -4,98 +4,414 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Система учета оператора мобильной связи</title>
+
     <style>
+        :root {
+            --bg-start: #eef3f9;
+            --bg-end: #ffffff;
+            --brand: #2a7de1;
+            --brand-600: #1c61b3;
+            --text: #1f2937;
+            --muted: #6b7280;
+            --card: #ffffff;
+            --border: #e5e7eb;
+            --shadow: 0 10px 25px rgba(0,0,0,0.08);
+        }
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f0f0f0;
+            background: linear-gradient(180deg, var(--bg-start), var(--bg-end)) fixed;
+            min-height: 100vh;
+            color: var(--text);
+        }
+        .site-header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: rgba(255,255,255,0.8);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--border);
+        }
+        .nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 12px 20px;
             display: flex;
-            justify-content: center;
             align-items: center;
-            height: 100vh;
+            justify-content: space-between;
+            gap: 16px;
+        }
+        .nav .left { display: flex; align-items: center; gap: 10px; }
+        .nav .left img { width: 28px; height: 28px; }
+        .nav .brand-name { font-weight: 700; color: var(--brand); }
+        .nav a {
+            color: #0f172a;
+            text-decoration: none;
+            padding: 8px 10px;
+            border-radius: 8px;
+        }
+        .nav a:hover { background: #eef2ff; }
+        .hero {
+            background: radial-gradient(1200px 400px at 20% 0%, #e0efff, transparent), linear-gradient(180deg, #f7fbff, transparent);
+            padding: 32px 0 16px;
+            border-bottom: 1px solid var(--border);
+        }
+        .hero-inner { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        .hero-content {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 20px;
+            align-items: center;
+        }
+        .hero h1 { font-size: 32px; margin: 0 0 8px 0; }
+        .hero p { margin: 0 0 16px 0; color: var(--muted); }
+        .hero-illustration {
+            min-height: 160px;
+            background: linear-gradient(135deg, #dbeafe, #e0e7ff);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            box-shadow: var(--shadow);
         }
         .container {
-            width: 80%;
-            background-color: #fff;
-            padding: 20px;
-            border: 2px solid #000;
-            text-align: center;
+            width: 90%;
+            max-width: 1100px;
+            background-color: var(--card);
+            padding: 24px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            box-shadow: var(--shadow);
+            margin: 24px auto;
         }
+        /* Sections */
+        .section { max-width: 1200px; margin: 28px auto; padding: 0 20px; }
+        .section .section-inner { background: var(--card); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow); padding: 22px; }
+        .section-title { font-size: 22px; margin: 0 0 14px 0; }
+        .section-subtitle { margin: 0 0 18px 0; color: var(--muted); }
+
+        /* Tariff cards */
+        .tariff-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+        .tariff-card { border: 1px solid var(--border); border-radius: 12px; padding: 16px; background: #fbfdff; }
+        .tariff-card h3 { margin: 0 0 8px 0; font-size: 18px; }
+        .tariff-feature { color: var(--muted); font-size: 14px; margin: 4px 0; }
+
+        /* Steps */
+        .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+        .step { background: #ffffff; border: 1px solid var(--border); border-radius: 12px; padding: 16px; display: flex; gap: 12px; align-items: center; }
+        .step img { width: 36px; height: 36px; }
+
+        /* Testimonials */
+        .testimonials { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+        .testimonial { background: #ffffff; border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+        .testimonial .author { margin-top: 8px; color: var(--muted); font-size: 14px; }
+
+        /* FAQ */
+        .faq-item { border: 1px solid var(--border); border-radius: 12px; background: #ffffff; margin-bottom: 10px; overflow: hidden; }
+        .faq-q { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; cursor: pointer; }
+        .faq-a { max-height: 0; overflow: hidden; transition: max-height .25s ease; padding: 0 14px; }
+        .faq-item.open .faq-a { max-height: 180px; padding: 0 14px 12px 14px; }
+
+        /* Gallery */
+        .gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+        .gallery figure { margin: 0; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; background: #fff; }
+        .gallery img { width: 100%; height: 120px; object-fit: cover; display: block; }
+
+        /* Reveal on scroll */
+        .reveal { opacity: 0; transform: translateY(10px); transition: opacity .4s ease, transform .4s ease; }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
         h1 {
-            font-size: 24px;
-            margin-bottom: 20px;
+            font-size: 26px;
+            margin: 0 0 8px 0;
         }
-        .header {
+        .subtitle {
+            margin: 0 0 20px 0;
+            color: var(--muted);
+            font-size: 14px;
+        }
+        .header { display: flex; align-items: stretch; gap: 20px; }
+        .brand {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            gap: 12px;
+            padding: 14px 16px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: #f8fafc;
+        }
+        .brand img {
+            width: 40px;
+            height: 40px;
+        }
+        .brand .title-wrap {
+            display: flex;
+            flex-direction: column;
+        }
+        .brand .title-wrap small { color: var(--muted); }
+        .search-panel {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex: 1;
+            padding: 14px 16px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
         }
         .search-section, .date-section, .client-section {
-            margin-bottom: 20px;
+            margin: 0;
+        }
+        .search-section label { font-size: 12px; color: var(--muted); }
+        .search-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 6px;
         }
         .search-section input[type="text"] {
-            padding: 5px;
-            width: 200px;
-            margin-right: 10px;
-        }
-        .button-section {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            flex-wrap: wrap;
+            padding: 10px 12px;
+            width: 240px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            outline: none;
         }
         .button {
-            padding: 10px 20px;
-            background-color: #d3d3d3;
-            border: 1px solid #000;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background-color: #e5ecf7;
+            color: #0f172a;
+            border: 1px solid var(--border);
+            border-radius: 10px;
             cursor: pointer;
-            width: 200px;
-            margin: 5px;
+            transition: transform .1s ease, box-shadow .2s ease, background-color .2s ease;
+            text-decoration: none;
         }
-        .button.highlight {
-            background-color: #a9a9a9;
+        .button svg { width: 18px; height: 18px; }
+        .button:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0,0,0,0.08); }
+        .button.highlight { background-color: #dbeafe; border-color: #bfdbfe; }
+        .date, .client { font-size: 14px; color: var(--muted); }
+        .date strong, .client strong { color: var(--text); font-weight: 600; }
+        .button-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+            margin-top: 8px;
+            align-items: stretch;
         }
-        .date {
-            font-size: 14px;
-            color: #555;
+        .feature-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 18px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: #ffffff;
+            transition: box-shadow .2s ease, transform .1s ease;
+            text-decoration: none;
+            color: inherit;
+            min-height: 120px;
         }
-        .client {
-            font-size: 14px;
-            color: #555;
+        .feature-card:hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(0,0,0,0.08); }
+        .feature-card img { width: 26px; height: 26px; }
+        .feature-card .fc-text { display: flex; flex-direction: column; }
+        .feature-card .fc-text small { color: var(--muted); }
+        .feature-intro { background: #f8fafc; }
+        .feature-intro img { width: 32px; height: 32px; }
+        .feature-intro .fc-text strong { font-size: 18px; }
+        @media (min-width: 1100px) {
+            .feature-intro { grid-column: span 2; }
+        }
+        .site-footer { border-top: 1px solid var(--border); margin-top: 28px; padding: 18px 20px; color: var(--muted); text-align: center; }
+        @media (max-width: 900px) {
+            .hero-content { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 720px) {
+            .header { flex-direction: column; }
+            .search-section input[type="text"] { width: 100%; }
         }
     </style>
 </head>
 <body>
-<div class="container">
+<header class="site-header">
+    <nav class="nav">
+        <div class="left">
+            <img src="assets/images/logo-operator.svg" alt="Logo">
+            <span class="brand-name">CallTrack</span>
+        </div>
+        <div class="right">
+            <a href="#features">Функции</a>
+            <a href="tariffs.html">Тарифы</a>
+            <a href="#steps">Как это работает</a>
+            <a href="#faq">FAQ</a>
+            <a href="login.html">Вход</a>
+            <a href="registration.html">Регистрация</a>
+        </div>
+    </nav>
+    </header>
+
+<section class="hero">
+    <div class="hero-inner">
+        <div class="hero-content">
+            <div>
     <h1>Система учета оператора мобильной связи</h1>
+                <p>Регистрация платежей и звонков, отчеты и контроль задолженности в одном месте.</p>
     <div class="header">
+                    <div class="brand" style="display:none"></div>
+                    <div class="search-panel">
         <div class="search-section">
-            <label for="phoneInput">Поиск клиента</label><br>
+                            <label for="phoneInput">Поиск клиента</label>
+                            <div class="search-row">
             <input type="text" id="phoneInput" placeholder="Введите номер телефона">
-            <button class="button highlight" id="searchBtn">Найти</button>
+                                <button class="button highlight" id="searchBtn" title="Найти клиента">
+                                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm10 2-6-6" stroke="#1f2937" stroke-width="2" stroke-linecap="round"/></svg>
+                                    Найти
+                                </button>
+                            </div>
         </div>
         <div class="date-section">
-            <span class="date">Текущая дата</span><br>
+                            <span class="date"><strong>Дата:</strong></span><br>
             <span class="date" id="currentDate"></span>
         </div>
         <div class="client-section">
-            <span class="client">Клиент</span><br>
+                            <span class="client"><strong>Клиент:</strong></span><br>
             <span class="client" id="clientInfo">.........</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-illustration" aria-hidden="true"></div>
         </div>
     </div>
+</section>
+
+<main class="container" id="features">
+    <h2 style="margin-top:0; margin-bottom:12px; font-size:20px;">Быстрые действия</h2>
     <div class="button-section">
-        <div class="button">Регистрация платежей</div>
-        <div class="button">Отчеты по оплатам</div>
-        <div class="button">Регистрация звонков</div>
-        <div class="button">Отчеты по звонкам</div>
-        <div class="button">Отчет о должниках</div>
-        <div class="button">Уведомления о задолженности</div>
-        <div class="button">Отчет по звонкам</div>
-        <div class="button">Уведомления о задолженностях</div>
+        <a href="#features" class="feature-card feature-intro" aria-disabled="true" onclick="return false;">
+            <img src="assets/images/logo-operator.svg" alt="">
+            <div class="fc-text">
+                <strong>Система учета оператора мобильной связи</strong>
+                <small>Регистрация платежей и звонков, отчеты, контроль задолженности</small>
+            </div>
+        </a>
+        <a href="registration_payments.html" class="feature-card" title="Зачисление платежей">
+            <img src="assets/images/payment.svg" alt="Платежи">
+            <div class="fc-text"><strong>Регистрация платежей</strong><small>Пополнение счета клиента</small></div>
+        </a>
+        <a href="reports_payments.html" class="feature-card" title="Отчеты по оплатам">
+            <img src="assets/images/report.svg" alt="Отчеты оплат">
+            <div class="fc-text"><strong>Отчеты по оплатам</strong><small>За период</small></div>
+        </a>
+        <a href="registration_calls.html" class="feature-card" title="Регистрация разговоров">
+            <img src="assets/images/call.svg" alt="Звонки">
+            <div class="fc-text"><strong>Регистрация звонков</strong><small>Местные и международные</small></div>
+        </a>
+        <a href="reports_calls.html" class="feature-card" title="Отчеты по звонкам">
+            <img src="assets/images/report.svg" alt="Отчеты звонков">
+            <div class="fc-text"><strong>Отчеты по звонкам</strong><small>По месяцу</small></div>
+        </a>
+        <a href="report_debtors.html" class="feature-card" title="Список должников">
+            <img src="assets/images/debt.svg" alt="Должники">
+            <div class="fc-text"><strong>Отчет о должниках</strong><small>Актуальная задолженность</small></div>
+        </a>
+        <a href="notifications_debt.html" class="feature-card" title="Уведомления о долгах">
+            <img src="assets/images/notify.svg" alt="Уведомления">
+            <div class="fc-text"><strong>Уведомления о задолженности</strong><small>Оповещения клиентам</small></div>
+        </a>
+        <a href="tariffs.html" class="feature-card" title="Управление тарифами">
+            <img src="assets/images/logo-operator.svg" alt="Тарифы">
+            <div class="fc-text"><strong>Тарифы</strong><small>Просмотр тарифных планов</small></div>
+        </a>
+    </div>
+</main>
+
+<section class="section" id="tariffs">
+    <div class="section-inner reveal">
+        <h2 class="section-title">Тариф и стоимость услуг</h2>
+        <p class="section-subtitle">Единый тарифный план: абонентская плата с включёнными минутами местной связи, сверх лимита — поминутная тарификация. Международные звонки всегда оплачиваются отдельно.</p>
+        <div class="tariff-grid">
+            <div class="tariff-card">
+                <h3>Абонентская плата</h3>
+                <p class="tariff-feature">Включает пакет минут местной связи</p>
+                <p class="tariff-feature">Списание 1-го числа каждого месяца автоматически</p>
+            </div>
+            <div class="tariff-card">
+                <h3>Местные звонки</h3>
+                <p class="tariff-feature">Минуты сверх лимита — по единому тарифу</p>
+                <p class="tariff-feature">Кредит минут при задолженности</p>
+            </div>
+            <div class="tariff-card">
+                <h3>Международные звонки</h3>
+                <p class="tariff-feature">Не входят в абонентскую плату</p>
+                <p class="tariff-feature">Всегда тарифицируются отдельно</p>
+            </div>
+            <div class="tariff-card">
+                <h3>Оплаты</h3>
+                <p class="tariff-feature">Регистрация поступлений на счёт клиента</p>
+                <p class="tariff-feature">Отчёты по оплатам за период</p>
+            </div>
+        </div>
+    </div>
+    </section>
+
+<section class="section" id="steps">
+    <div class="section-inner reveal">
+        <h2 class="section-title">Как это работает</h2>
+        <div class="steps">
+            <div class="step"><img src="assets/images/illustration-calls.svg" alt="Шаг 1"><div><strong>Регистрируйте звонки</strong><div class="section-subtitle">Местные и международные звонки клиента</div></div></div>
+            <div class="step"><img src="assets/images/payment.svg" alt="Шаг 2"><div><strong>Зачисляйте оплаты</strong><div class="section-subtitle">Регистрация платежей на счёт</div></div></div>
+            <div class="step"><img src="assets/images/report.svg" alt="Шаг 3"><div><strong>Формируйте отчёты</strong><div class="section-subtitle">По звонкам и оплатам за период</div></div></div>
+            <div class="step"><img src="assets/images/debt.svg" alt="Шаг 4"><div><strong>Контролируйте задолженность</strong><div class="section-subtitle">Отчёты о должниках и уведомления</div></div></div>
+        </div>
+    </div>
+    </section>
+
+<section class="section" id="gallery">
+    <div class="section-inner reveal">
+        <h2 class="section-title">Интерфейсы системы</h2>
+        <div class="gallery">
+            <figure><img src="assets/images/gallery-1.svg" alt="Экран платежей"></figure>
+            <figure><img src="assets/images/gallery-2.svg" alt="Экран звонков"></figure>
+            <figure><img src="assets/images/gallery-3.svg" alt="Отчёт по звонкам"></figure>
+            <figure><img src="assets/images/gallery-4.svg" alt="Отчёт по оплатам"></figure>
+        </div>
+    </div>
+    </section>
+
+<section class="section" id="testimonials">
+    <div class="section-inner reveal">
+        <h2 class="section-title">Отзывы пользователей</h2>
+        <div class="testimonials">
+            <div class="testimonial"><div>«Отчёты формируются за секунды — удобно сверять оплаты.»</div><div class="author">Биллинг-специалист</div></div>
+            <div class="testimonial"><div>«Регистрация звонков проста, а уведомления о долгах — спасение.»</div><div class="author">Оператор кол-центра</div></div>
+            <div class="testimonial"><div>«Единый тариф и прозрачный учёт — меньше ошибок в расчётах.»</div><div class="author">Финансовый отдел</div></div>
+        </div>
+    </div>
+    </section>
+
+<section class="section" id="faq">
+    <div class="section-inner reveal">
+        <h2 class="section-title">FAQ</h2>
+        <div class="faq-item">
+            <div class="faq-q"><strong>Когда списывается абонентская плата?</strong><span>+</span></div>
+            <div class="faq-a"><p>Автоматически 1-го числа каждого месяца.</p></div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q"><strong>Входит ли международная связь в абонентскую плату?</strong><span>+</span></div>
+            <div class="faq-a"><p>Нет, международные звонки всегда тарифицируются отдельно.</p></div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q"><strong>Можно ли получить отчёт за произвольный период?</strong><span>+</span></div>
+            <div class="faq-a"><p>Да, доступны отчёты по оплатам и по звонкам за выбранный период.</p></div>
     </div>
 </div>
+    </section>
+
+<footer class="site-footer">
+    © 2025 CallTrack · Оператор мобильной связи · Тариф: местный и международный, абонплата, лимит минут
+</footer>
 
 <script>
     function updateDate() {
@@ -107,5 +423,6 @@
     setInterval(updateDate, 60000);
 </script>
 <script src="/scripts/clientSearch.js"></script>
+<script src="/scripts/ui.js" type="module"></script>
 </body>
 </html>
