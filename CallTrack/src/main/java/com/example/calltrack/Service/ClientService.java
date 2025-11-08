@@ -2,11 +2,12 @@ package com.example.calltrack.Service;
 
 import com.example.calltrack.DTO.ClientRequestDTO;
 import com.example.calltrack.Entity.Client;
-import com.example.calltrack.Entity.PhoneNumber;
 import com.example.calltrack.Repository.ClientRepository;
 import com.example.calltrack.Repository.PhoneNumberRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -15,6 +16,8 @@ import java.time.LocalDateTime;
 public class ClientService {
 
     private final ClientRepository clientRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public ClientService(PhoneNumberRepository phoneNumberRepository,
                          ClientRepository clientRepository) {
@@ -37,7 +40,7 @@ public class ClientService {
                 .fullName(clientDTO.getFullName())
                 .birthDate(clientDTO.getBirthDate())
                 .email(clientDTO.getEmail())
-                .password(clientDTO.getPassword())
+                .password(passwordEncoder.encode(clientDTO.getPassword()))
                 .balance(0.0)
                 .status("USER")
                 .allowedCreditMinutes(0)
