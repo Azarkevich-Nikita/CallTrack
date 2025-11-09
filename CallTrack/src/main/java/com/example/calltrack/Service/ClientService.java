@@ -54,4 +54,24 @@ public class ClientService {
                 .build();
     }
 
+    public ResponseEntity<?> loginClient(ClientRequestDTO clientRequestDTO) {
+        Client findingClient = clientRepository.findByEmail(clientRequestDTO.getEmail());
+        if (findingClient == null) {
+            System.out.println("Client not found" +  clientRequestDTO.getEmail());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        else if(passwordEncoder.matches(clientRequestDTO.getPassword(), findingClient.getPassword())){
+            System.out.println(clientRequestDTO.getFullName());
+            return ResponseEntity.ok(Client.builder()
+                    .fullName(findingClient.getFullName())
+                    .email(findingClient.getEmail())
+                    .balance(0.0)
+                    .status("USER")
+                    .build());
+        }
+        System.out.println("Wrong password");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body("Some think wrong!");
+    }
+
 }

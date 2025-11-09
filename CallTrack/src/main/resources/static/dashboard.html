@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Личный кабинет - CallTrack</title>
+    
+    <link rel="stylesheet" href="styles/common.css">
+    <link rel="stylesheet" href="styles/dashboard.css">
+</head>
+<body>
+    <header class="site-header">
+        <nav class="nav">
+            <div class="left">
+                <img src="assets/images/logo-operator.svg" alt="Logo">
+                <span class="brand-name">CallTrack</span>
+            </div>
+            <div class="right">
+                <a href="index.html">Главная</a>
+                <a href="tariffs.html">Тарифы</a>
+                <a href="#" id="logoutBtn">Выйти</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="dashboard-container">
+        <!-- Верхняя секция: Основной счет и информация -->
+        <div class="dashboard-top">
+            <div class="main-account-card">
+                <div class="account-header">
+                    <h2 class="account-title">Основной счет</h2>
+                    <div class="account-number">
+                        <span id="accountNumber">Загрузка...</span>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="account-actions">
+                    <button class="btn-action btn-primary" id="transferBtn">
+                        Перевести средства
+                    </button>
+                    <button class="btn-action btn-secondary" id="linkAccountsBtn">
+                        Привязать счета
+                    </button>
+                </div>
+                <div class="available-funds">
+                    <span class="funds-label">Доступные средства</span>
+                    <span class="funds-amount" id="availableFunds">0,00 ₽</span>
+                </div>
+            </div>
+
+            <div class="standing-orders-card">
+                <div class="standing-orders-content">
+                    <h3>Управление тарифами</h3>
+                    <p>Мы поможем вам управлять тарифными планами. Выберите тариф один раз, и система будет автоматически отслеживать абонентскую плату и услуги.</p>
+                    <button class="btn-standing-order" id="manageTariffsBtn">
+                        Управлять тарифами
+                    </button>
+                </div>
+                <div class="standing-orders-icon">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/>
+                        <path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="2"/>
+                        <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Средняя секция: Номера телефонов клиента -->
+        <div class="phone-numbers-section">
+            <h3 class="section-title">Номера телефонов</h3>
+            <div class="phone-numbers-grid" id="phoneNumbersGrid">
+                <!-- Телефоны будут добавлены динамически -->
+                <div class="loading-placeholder">Загрузка номеров...</div>
+            </div>
+        </div>
+
+        <!-- Нижняя секция: Последние сообщения/оплаты и статистика -->
+        <div class="dashboard-bottom">
+            <!-- Последние сообщения/оплаты -->
+            <div class="transactions-card">
+                <div class="card-header">
+                    <h3 class="card-title">Последние операции</h3>
+                    <a href="reports_payments.html" class="card-link">
+                        Все операции
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </a>
+                </div>
+                <div class="transactions-list" id="transactionsList">
+                    <!-- Транзакции будут добавлены динамически -->
+                    <div class="loading-placeholder">Загрузка операций...</div>
+                </div>
+                <a href="reports_payments.html" class="see-more-link">
+                    Показать еще
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </a>
+            </div>
+
+            <!-- Статистика -->
+            <div class="statistics-card">
+                <div class="card-header">
+                    <h3 class="card-title">Статистика</h3>
+                    <a href="reports_calls.html" class="card-link">
+                        Подробнее
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </a>
+                </div>
+                <div class="statistics-summary">
+                    <div class="stat-item">
+                        <span class="stat-label">За день</span>
+                        <span class="stat-value" id="statDaily">0,00 ₽</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">За неделю</span>
+                        <span class="stat-value" id="statWeekly">0,00 ₽</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">За месяц</span>
+                        <span class="stat-value" id="statMonthly">0,00 ₽</span>
+                    </div>
+                </div>
+                <div class="statistics-period">
+                    <select id="statisticsPeriod" class="period-select">
+                        <option value="month">Последний месяц</option>
+                        <option value="week">Последняя неделя</option>
+                        <option value="day">Сегодня</option>
+                    </select>
+                </div>
+                <div class="statistics-chart" id="statisticsChart">
+                    <!-- График статистики будет добавлен динамически -->
+                    <div class="chart-placeholder">
+                        <p>Статистика по категориям</p>
+                        <div class="chart-legend" id="chartLegend">
+                            <!-- Легенда графика -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="scripts/dashboard.js"></script>
+</body>
+</html>

@@ -20,4 +20,9 @@ public class ClientController {
         return clientService.addNewClient(clientRequestDTO);
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<?> loginClient(@RequestBody ClientRequestDTO clientRequestDTO) {
+        return  clientService.loginClient(clientRequestDTO);
+    }
+
 }

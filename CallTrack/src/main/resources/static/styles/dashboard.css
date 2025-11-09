@@ -1,0 +1,553 @@
+.dashboard-container {
+    max-width: 1200px;
+    margin: 24px auto;
+    padding: 0 20px;
+}
+
+/* Верхняя секция */
+.dashboard-top {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+.main-account-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    box-shadow: var(--shadow);
+}
+
+.account-header {
+    margin-bottom: 20px;
+}
+
+.account-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 12px 0;
+    color: var(--text);
+}
+
+.account-number {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.account-number svg {
+    color: var(--success);
+}
+
+.account-actions {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.btn-action {
+    padding: 10px 16px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    background: var(--card);
+    color: var(--text);
+}
+
+.btn-action.btn-primary {
+    background: var(--success);
+    color: white;
+    border-color: var(--success);
+}
+
+.btn-action.btn-primary:hover {
+    background: #059669;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.btn-action.btn-secondary {
+    background: #f3f4f6;
+    border-color: var(--border);
+}
+
+.btn-action.btn-secondary:hover {
+    background: #e5e7eb;
+    transform: translateY(-1px);
+}
+
+.available-funds {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.funds-label {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.funds-amount {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.standing-orders-card {
+    background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
+    border-radius: 14px;
+    padding: 24px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+    color: white;
+}
+
+.standing-orders-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.standing-orders-content {
+    position: relative;
+    z-index: 1;
+}
+
+.standing-orders-card h3 {
+    font-size: 20px;
+    margin: 0 0 12px 0;
+    color: white;
+}
+
+.standing-orders-card p {
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0 0 16px 0;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.btn-standing-order {
+    background: white;
+    color: #0f766e;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.btn-standing-order:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.standing-orders-icon {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    opacity: 0.3;
+    z-index: 0;
+}
+
+.standing-orders-icon svg {
+    width: 64px;
+    height: 64px;
+    color: white;
+}
+
+/* Секция номеров телефонов */
+.phone-numbers-section {
+    margin-bottom: 24px;
+}
+
+.phone-numbers-section .section-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0 0 16px 0;
+    color: var(--text);
+}
+
+.phone-numbers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+.phone-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.phone-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-color: var(--brand);
+}
+
+.phone-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.phone-number {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.phone-masked {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 4px;
+}
+
+.phone-menu {
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: background 0.2s ease;
+}
+
+.phone-menu:hover {
+    background: #f3f4f6;
+}
+
+.phone-menu svg {
+    width: 20px;
+    height: 20px;
+    color: var(--muted);
+}
+
+.phone-balance {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.phone-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.phone-status.active {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.phone-status.inactive {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+/* Нижняя секция */
+.dashboard-bottom {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+.transactions-card,
+.statistics-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    box-shadow: var(--shadow);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.card-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+    color: var(--text);
+}
+
+.card-link {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--success);
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.2s ease;
+}
+
+.card-link:hover {
+    color: #059669;
+}
+
+/* Список транзакций */
+.transactions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.transaction-item {
+    display: grid;
+    grid-template-columns: auto 1fr auto auto;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 8px;
+    transition: background 0.2s ease;
+    cursor: pointer;
+    align-items: center;
+}
+
+.transaction-item:hover {
+    background: #f9fafb;
+}
+
+.transaction-date {
+    font-size: 12px;
+    color: var(--muted);
+    white-space: nowrap;
+}
+
+.transaction-description {
+    font-size: 14px;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.transaction-type {
+    font-size: 12px;
+    color: var(--muted);
+    white-space: nowrap;
+}
+
+.transaction-category {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.category-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.transaction-amount {
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.transaction-amount.positive {
+    color: var(--success);
+}
+
+.transaction-amount.negative {
+    color: var(--text);
+}
+
+.transaction-expand {
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: background 0.2s ease;
+}
+
+.transaction-expand:hover {
+    background: #f3f4f6;
+}
+
+.transaction-expand svg {
+    width: 16px;
+    height: 16px;
+    color: var(--muted);
+}
+
+.see-more-link {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--success);
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.2s ease;
+}
+
+.see-more-link:hover {
+    color: #059669;
+}
+
+/* Статистика */
+.statistics-summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.stat-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.statistics-period {
+    margin-bottom: 20px;
+}
+
+.period-select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 14px;
+    color: var(--text);
+    background: var(--card);
+    cursor: pointer;
+}
+
+.period-select:focus {
+    outline: none;
+    border-color: var(--brand);
+}
+
+.statistics-chart {
+    min-height: 200px;
+}
+
+.chart-placeholder {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--muted);
+}
+
+.chart-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 20px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+}
+
+.legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.loading-placeholder {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--muted);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--muted);
+}
+
+.empty-state h3 {
+    margin: 0 0 8px 0;
+    color: var(--text);
+}
+
+/* Адаптивность */
+@media (max-width: 1024px) {
+    .dashboard-top {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-bottom {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-container {
+        padding: 0 16px;
+    }
+
+    .account-actions {
+        flex-direction: column;
+    }
+
+    .btn-action {
+        width: 100%;
+    }
+
+    .phone-numbers-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .statistics-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .transaction-item {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .transaction-date,
+    .transaction-type,
+    .transaction-category {
+        font-size: 11px;
+    }
+}
