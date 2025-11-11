@@ -192,25 +192,14 @@ class DashboardManager {
                 return;
             }
 
-            let response = await fetch(`/api/v1/clients/${clientId}/phones`, {
+            const response = await fetch(`/api/v1/phoneNumber/${clientId}`, {
                 method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
+                headers: { 'Content-Type': 'application/json' }
             });
 
             if (!response.ok) {
-                response = await fetch(`/api/v1/clients/${clientId}/phone-numbers`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (!response.ok) {
-                    this.renderPhoneNumbers([]);
-                    return;
-                }
+                this.renderPhoneNumbers([]);
+                return;
             }
 
             const phones = await response.json();
@@ -226,7 +215,23 @@ class DashboardManager {
         if (!grid) return;
 
         if (!phones || phones.length === 0) {
-            grid.innerHTML = '<div class="empty-state"><h3>Номера телефонов не найдены</h3><p>Добавьте номер телефона, чтобы начать работу</p></div>';
+            grid.innerHTML = `
+                <div class="empty-state">
+                    <h3>Номера телефонов не найдены</h3>
+                    <p>Добавьте номер телефона, чтобы начать работу</p>
+                    <button class="btn-action btn-primary" id="addPhoneBtn" style="margin-top: 20px;">
+                        Добавить номер
+                    </button>
+                </div>
+            `;
+            
+            // Добавляем обработчик для кнопки
+            const addPhoneBtn = document.getElementById('addPhoneBtn');
+            if (addPhoneBtn) {
+                addPhoneBtn.addEventListener('click', () => {
+                    window.location.href = 'register-phone.html';
+                });
+            }
             return;
         }
 

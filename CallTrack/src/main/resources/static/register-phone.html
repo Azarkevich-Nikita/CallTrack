@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация номера телефона - CallTrack</title>
+    
+    <link rel="stylesheet" href="styles/common.css">
+    <link rel="stylesheet" href="styles/registration.css">
+    <style>
+        .auth-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #dbeafe, #e0e7ff);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+        .auth-icon img { width: 28px; height: 28px; }
+        .phone-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #dbeafe, #e0e7ff);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+        .phone-icon svg {
+            width: 28px;
+            height: 28px;
+            color: var(--brand);
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <nav class="nav">
+            <div class="left">
+                <img src="assets/images/logo-operator.svg" alt="Logo">
+                <span class="brand-name">CallTrack</span>
+            </div>
+            <div class="right">
+                <a href="index.html">Главная</a>
+                <a href="dashboard.html">Личный кабинет</a>
+                <a href="tariffs.html">Тарифы</a>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="registration-container">
+            <div class="registration-card">
+                <div class="registration-header" style="margin-bottom: 15px;">
+                    <div class="phone-icon">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <h2>Добавить номер телефона</h2>
+                    <p>Зарегистрируйте новый номер телефона для отслеживания звонков и расходов</p>
+                </div>
+
+                <form id="phoneRegistrationForm" class="registration-form" onsubmit="return false;">
+                    <div class="registration-section">
+                        <div class="form-group">
+                            <label for="phoneNumberInput" class="form-label">Номер телефона</label>
+                            <div class="input-container">
+                                <input 
+                                    type="tel" 
+                                    id="phoneNumberInput" 
+                                    name="phoneNumber" 
+                                    class="form-input" 
+                                    placeholder="+7 (999) 123-45-67" 
+                                    required
+                                    pattern="[+]?[0-9\s\-\(\)]+"
+                                >
+                            </div>
+                            <div class="input-hint">Введите номер телефона в международном формате</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phoneNameInput" class="form-label">Название (необязательно)</label>
+                            <div class="input-container">
+                                <input 
+                                    type="text" 
+                                    id="phoneNameInput" 
+                                    name="phoneName" 
+                                    class="form-input" 
+                                    placeholder="Например: Рабочий телефон"
+                                >
+                            </div>
+                            <div class="input-hint">Дайте название номеру для удобства идентификации</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="tariffSelect" class="form-label">Тарифный план (необязательно)</label>
+                            <div class="input-container">
+                                <select id="tariffSelect" name="tariff" class="form-input">
+                                    <option value="">Выберите тариф</option>
+                                </select>
+                            </div>
+                            <div class="input-hint">Вы можете выбрать тарифный план позже в настройках</div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary" id="submitBtn">
+                            <span class="btn-text">Зарегистрировать номер</span>
+                            <div class="btn-loading" style="display: none;">
+                                <svg class="spinner" width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" stroke-dasharray="60" stroke-dashoffset="60">
+                                        <animate attributeName="stroke-dasharray" dur="1.5s" values="0 62.83;31.415 31.415;0 62.83" repeatCount="indefinite"/>
+                                        <animate attributeName="stroke-dashoffset" dur="1.5s" values="0;-31.415;-62.83" repeatCount="indefinite"/>
+                                    </circle>
+                                </svg>
+                                Регистрация...
+                            </div>
+                        </button>
+                        <a href="dashboard.html" class="btn btn-secondary">Отмена</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для уведомлений -->
+    <div id="notificationModal" class="notification-modal">
+        <div class="notification-content">
+            <div class="notification-icon"></div>
+            <div class="notification-message"></div>
+            <button class="notification-close" id="notificationClose">&times;</button>
+        </div>
+    </div>
+
+    <script src="scripts/register-phone.js"></script>
+</body>
+</html>
+

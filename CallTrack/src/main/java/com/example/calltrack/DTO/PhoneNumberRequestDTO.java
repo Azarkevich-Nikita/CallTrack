@@ -12,10 +12,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PhoneNumberRequestDTO {
-    @ManyToOne
-    @JoinColumn(name = "client_id", nullable = false)
-    private Client client;
-
-    @Column(name = "phone", nullable = false, unique = true)
+    private Long clientId;
     private String phone;
 }

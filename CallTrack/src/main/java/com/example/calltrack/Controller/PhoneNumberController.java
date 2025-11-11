@@ -7,10 +7,9 @@ import com.example.calltrack.Repository.PhoneNumberRepository;
 import com.example.calltrack.Service.PhoneNumberService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -25,4 +24,10 @@ public class PhoneNumberController {
     public ResponseEntity<String> registerNewPhone(@RequestBody PhoneNumberRequestDTO phoneNumberRequestDTO) {
         return  phoneNumberService.registerPhoneNumber(phoneNumberRequestDTO);
     }
+
+    @GetMapping("/phoneNumber/{id}")
+    public ResponseEntity<List<PhoneNumber>> getPhoneNumber(@PathVariable Long id) {
+        return phoneNumberService.getByClientId(id);
+    }
+
 }

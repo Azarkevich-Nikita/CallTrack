@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 public class ClientService {
@@ -24,13 +25,17 @@ public class ClientService {
         this.clientRepository = clientRepository;
     }
 
-    public Client getClientByNEmail(String email) {
+    public Optional<Client> findClientById(Long client_id){
+        return clientRepository.findById(client_id);
+    }
+
+    public Client getClientByEmail(String email) {
         System.out.println(clientRepository.findByEmail(email));
         return clientRepository.findByEmail(email);
     }
 
     public ResponseEntity<String> addNewClient(ClientRequestDTO clientDTO) {
-        if (getClientByNEmail(clientDTO.getEmail()) != null) {
+        if (getClientByEmail(clientDTO.getEmail()) != null) {
             return ResponseEntity
                     .status(HttpStatus.CONFLICT)
                     .body("Client already exists");
@@ -63,6 +68,7 @@ public class ClientService {
         else if(passwordEncoder.matches(clientRequestDTO.getPassword(), findingClient.getPassword())){
             System.out.println(clientRequestDTO.getFullName());
             return ResponseEntity.ok(Client.builder()
+                    .clientId(findingClient.getClientId())
                     .fullName(findingClient.getFullName())
                     .email(findingClient.getEmail())
                     .balance(0.0)
