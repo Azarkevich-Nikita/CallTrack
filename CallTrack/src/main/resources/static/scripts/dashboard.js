@@ -214,33 +214,16 @@ class DashboardManager {
         const grid = document.getElementById('phoneNumbersGrid');
         if (!grid) return;
 
-        if (!phones || phones.length === 0) {
-            grid.innerHTML = `
-                <div class="empty-state">
-                    <h3>Номера телефонов не найдены</h3>
-                    <p>Добавьте номер телефона, чтобы начать работу</p>
-                    <button class="btn-action btn-primary" id="addPhoneBtn" style="margin-top: 20px;">
-                        Добавить номер
-                    </button>
-                </div>
-            `;
-            
-            // Добавляем обработчик для кнопки
-            const addPhoneBtn = document.getElementById('addPhoneBtn');
-            if (addPhoneBtn) {
-                addPhoneBtn.addEventListener('click', () => {
-                    window.location.href = 'register-phone.html';
-                });
-            }
-            return;
-        }
+        const phoneArray = phones && phones.length > 0 ? phones : [];
 
-        grid.innerHTML = phones.map(phone => `
+        const phoneCards = phoneArray.map(phone => {
+            const phoneNumber = phone.number || phone.phoneNumber || phone.phone || 'N/A';
+            return `
             <div class="phone-card" data-phone-id="${phone.id}">
                 <div class="phone-card-header">
                     <div>
-                        <div class="phone-number">${phone.number || phone.phoneNumber || 'N/A'}</div>
-                        <div class="phone-masked">${this.maskPhoneNumber(phone.number || phone.phoneNumber || '')}</div>
+                        <div class="phone-number">${phone.numberName || phoneNumber}</div>
+                        <div class="phone-masked">${this.maskPhoneNumber(phoneNumber)}</div>
                     </div>
                     <div class="phone-menu">
                         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -255,7 +238,50 @@ class DashboardManager {
                     ${(phone.status || 'active') === 'active' ? 'Активен' : 'Неактивен'}
                 </div>
             </div>
-        `).join('');
+        `;
+        }).join('');
+
+        // Добавляем карточку "Добавить новый телефон"
+        const addPhoneCard = `
+            <div class="phone-card phone-card-add" id="addPhoneCard">
+                <div class="phone-card-header">
+                    <div>
+                        <div class="phone-number">Добавить новый</div>
+                        <div class="phone-masked">Нажмите, чтобы зарегистрировать</div>
+                    </div>
+                    <div class="phone-add-icon">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                            <path d="M12 8v8M8 12h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="phone-balance" style="color: var(--brand);">+</div>
+                <div class="phone-status active">
+                    Новый номер
+                </div>
+            </div>
+        `;
+
+        if (phoneArray.length === 0) {
+            grid.innerHTML = `
+                <div class="empty-state">
+                    <h3>Номера телефонов не найдены</h3>
+                    <p>Добавьте номер телефона, чтобы начать работу</p>
+                </div>
+                ${addPhoneCard}
+            `;
+        } else {
+            grid.innerHTML = phoneCards + addPhoneCard;
+        }
+
+        // Добавляем обработчик для карточки добавления
+        const addPhoneCardElement = document.getElementById('addPhoneCard');
+        if (addPhoneCardElement) {
+            addPhoneCardElement.addEventListener('click', () => {
+                window.location.href = 'register-phone.html';
+            });
+        }
     }
 
     async loadRecentTransactions() {
@@ -482,9 +508,9 @@ class DashboardManager {
     }
 
     formatCurrency(amount) {
-        return new Intl.NumberFormat('ru-RU', {
+        return new Intl.NumberFormat('en-US', {
             style: 'currency',
-            currency: 'RUB',
+            currency: 'USD',
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
         }).format(amount);

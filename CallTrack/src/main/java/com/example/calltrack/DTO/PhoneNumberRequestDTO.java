@@ -13,5 +13,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class PhoneNumberRequestDTO {
     private Long clientId;
+    private String numberName;
     private String phone;
 }

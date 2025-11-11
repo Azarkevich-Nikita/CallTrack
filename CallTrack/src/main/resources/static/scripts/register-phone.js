@@ -52,8 +52,10 @@ class PhoneRegistrationManager {
                     this.tariffSelect.innerHTML = '<option value="">Выберите тариф</option>';
                     tariffArray.forEach(tariff => {
                         const option = document.createElement('option');
-                        option.value = tariff.id || tariff.tariffId;
-                        option.textContent = `${tariff.name || 'Тариф'} - ${this.formatCurrency(tariff.price || 0)}`;
+                        option.value = tariff.tariffId || tariff.id;
+                        const tariffName = tariff.tariffName || tariff.name || 'Тариф';
+                        const price = tariff.pricePerMinute || tariff.price || 0;
+                        option.textContent = `${tariffName} - ${this.formatCurrency(price)}`;
                         this.tariffSelect.appendChild(option);
                     });
                 }
@@ -107,7 +109,7 @@ class PhoneRegistrationManager {
             this.showNotification(message, true);
             setTimeout(() => {
                 window.location.href = 'dashboard.html';
-            }, 2000);
+            }, 500);
         } catch (error) {
             const errorMessage = error.message || 'Произошла ошибка при регистрации номера';
             this.showNotification(errorMessage, false);
@@ -126,7 +128,7 @@ class PhoneRegistrationManager {
 
         const formData = {
             phone: formattedNumber,
-            //phoneName: this.phoneNameInput.value.trim() || null,
+            phoneName: this.phoneNameInput.value.trim() || null,
             clientId: this.clientId,
         };
 

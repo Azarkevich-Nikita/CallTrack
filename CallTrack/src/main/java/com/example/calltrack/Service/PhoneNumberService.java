@@ -52,6 +52,7 @@ public class PhoneNumberService {
                 .phone(phoneNumberRequestDTO.getPhone())
                 .isPrimary(isPrimary)
                 .client(client)
+                .numberName(phoneNumberRequestDTO.getNumberName())
                 .activatedAt(LocalDateTime.now())
                 .build());
 

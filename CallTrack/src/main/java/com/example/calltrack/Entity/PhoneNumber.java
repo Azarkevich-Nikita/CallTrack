@@ -24,6 +24,9 @@ public class PhoneNumber {
     @JoinColumn(name = "client_id", nullable = false)
     private Client client;
 
+    @Column(name = "number_name")
+    private String numberName;
+
     @Column(name = "phone", nullable = false, unique = true)
     private String phone;
 

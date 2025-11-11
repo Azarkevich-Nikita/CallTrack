@@ -40,7 +40,7 @@
 }
 
 .account-number svg {
-    color: var(--success);
+    color: var(--brand);
 }
 
 .account-actions {
@@ -61,15 +61,15 @@
 }
 
 .btn-action.btn-primary {
-    background: var(--success);
+    background: var(--brand);
     color: white;
-    border-color: var(--success);
+    border-color: var(--brand);
 }
 
 .btn-action.btn-primary:hover {
-    background: #059669;
+    background: var(--brand-600);
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    box-shadow: 0 4px 12px rgba(42, 125, 225, 0.3);
 }
 
 .btn-action.btn-secondary {
@@ -260,13 +260,43 @@
 }
 
 .phone-status.active {
-    background: #d1fae5;
-    color: #065f46;
+    background: #dbeafe;
+    color: #1e40af;
 }
 
 .phone-status.inactive {
     background: #fee2e2;
     color: #991b1b;
+}
+
+.phone-card-add {
+    border: 2px dashed var(--border);
+    background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+    transition: all 0.2s ease;
+}
+
+.phone-card-add:hover {
+    border-color: var(--brand);
+    background: linear-gradient(135deg, #eff6ff 0%, #f8fafc 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(42, 125, 225, 0.15);
+}
+
+.phone-add-icon {
+    width: 24px;
+    height: 24px;
+    color: var(--brand);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.phone-card-add .phone-number {
+    color: var(--brand);
+}
+
+.phone-card-add .phone-masked {
+    color: var(--muted);
 }
 
 /* Нижняя секция */
@@ -304,14 +334,14 @@
     display: flex;
     align-items: center;
     gap: 4px;
-    color: var(--success);
+    color: var(--brand);
     text-decoration: none;
     font-size: 14px;
     transition: color 0.2s ease;
 }
 
 .card-link:hover {
-    color: #059669;
+    color: var(--brand-600);
 }
 
 /* Список транзакций */
@@ -378,7 +408,7 @@
 }
 
 .transaction-amount.positive {
-    color: var(--success);
+    color: var(--brand);
 }
 
 .transaction-amount.negative {
@@ -406,14 +436,14 @@
     display: flex;
     align-items: center;
     gap: 4px;
-    color: var(--success);
+    color: var(--brand);
     text-decoration: none;
     font-size: 14px;
     transition: color 0.2s ease;
 }
 
 .see-more-link:hover {
-    color: #059669;
+    color: var(--brand-600);
 }
 
 /* Статистика */
