@@ -43,7 +43,13 @@
             <div class="right">
                 <a href="index.html">Главная</a>
                 <a href="tariffs.html">Тарифы</a>
-                <a href="login.html" class="active">Вход</a>
+                <a href="dashboard.html" class="hidden user-link" data-auth="user" data-role="dashboard-link">
+                    <span class="user-avatar" data-role="user-initial">ЛК</span>
+                    <span data-role="user-name">Личный кабинет</span>
+                </a>
+                <a href="login.html" class="active" data-auth="guest">Вход</a>
+                <a href="registration.html" data-auth="guest">Регистрация</a>
+                <a href="#" class="hidden" data-auth="user" data-role="logout-link">Выйти</a>
             </div>
         </nav>
     </header>
@@ -60,9 +66,9 @@
 
                 <form id="loginForm" class="registration-form">
                     <div class="form-group">
-                        <label for="loginInput" class="form-label">Логин, email или номер телефона</label>
+                        <label for="loginInput" class="form-label">Логин</label>
                         <div class="input-container">
-                            <input type="text" id="loginInput" name="login" class="form-input" placeholder="Введите логин, email или номер телефона" required>
+                            <input type="text" id="loginInput" name="login" class="form-input" placeholder="Введите логин" required>
                         </div>
                     </div>
 
@@ -128,6 +134,7 @@
         </div>
     </div>
 
+    <script src="scripts/auth-header.js"></script>
     <script src="scripts/login.js"></script>
 </body>
 </html>

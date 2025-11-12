@@ -18,7 +18,7 @@
             <div class="right">
                 <a href="index.html">Главная</a>
                 <a href="tariffs.html">Тарифы</a>
-                <a href="#" id="logoutBtn">Выйти</a>
+                <a href="#" id="logoutBtn" data-auth="user" data-role="logout-link">Выйти</a>
             </div>
         </nav>
     </header>
@@ -146,6 +146,70 @@
         </div>
     </main>
 
+    <div class="modal-backdrop hidden" id="phoneDetailsModal" role="dialog" aria-modal="true" aria-labelledby="phoneDetailsTitle">
+        <div class="modal-card">
+            <button type="button" class="modal-close" id="phoneDetailsClose" aria-label="Закрыть окно">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </button>
+
+            <div class="modal-header">
+                <div class="modal-icon">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div>
+                    <h2 class="modal-title" id="phoneDetailsTitle">Номер телефона</h2>
+                    <p class="modal-subtitle" id="phoneDetailsSubtitle"></p>
+                </div>
+            </div>
+
+            <div class="modal-body">
+                <div class="modal-info-grid">
+                    <div class="info-block">
+                        <span class="info-label">Текущий баланс</span>
+                        <span class="info-value" id="phoneDetailsBalance">0,00 ₽</span>
+                    </div>
+                    <div class="info-block">
+                        <span class="info-label">Статус</span>
+                        <span class="info-status" id="phoneDetailsStatus">-</span>
+                    </div>
+                    <div class="info-block">
+                        <span class="info-label">Основной номер</span>
+                        <span class="info-value" id="phoneDetailsNumber">-</span>
+                    </div>
+                </div>
+
+                <form id="phoneTopUpForm" class="topup-form">
+                    <div class="form-group">
+                        <label for="topUpAmount" class="form-label">Сумма пополнения</label>
+                        <div class="input-container">
+                            <input type="number" id="topUpAmount" name="amount" class="form-input" min="0" step="0.01" placeholder="Введите сумму" required>
+                        </div>
+                        <div class="input-hint">Сумма будет зачислена на баланс выбранного номера</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="topUpMethod" class="form-label">Способ пополнения</label>
+                        <select id="topUpMethod" name="method" class="form-select" required>
+                            <option value="">Выберите способ</option>
+                            <option value="card">Банковская карта</option>
+                            <option value="transfer">Банковский перевод</option>
+                            <option value="cash">Наличные в офисе</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-action btn-primary topup-submit" id="phoneTopUpSubmit">
+                        Пополнить баланс
+                    </button>
+                </form>
+            </div>
+
+            <div class="modal-footer" id="phoneDetailsFooter"></div>
+        </div>
+    </div>
+
+    <script src="scripts/auth-header.js"></script>
     <script src="scripts/dashboard.js"></script>
 </body>
 </html>

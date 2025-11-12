@@ -8,6 +8,22 @@ class DashboardManager {
         this.clientId = localStorage.getItem('clientId');
         this.clientData = this.getClientDataFromStorage();
         this.userData = null;
+        this.phoneNumbers = [];
+        this.selectedPhone = null;
+
+        this.phoneModal = document.getElementById('phoneDetailsModal');
+        this.phoneDetailsClose = document.getElementById('phoneDetailsClose');
+        this.phoneDetailsTitle = document.getElementById('phoneDetailsTitle');
+        this.phoneDetailsSubtitle = document.getElementById('phoneDetailsSubtitle');
+        this.phoneDetailsBalance = document.getElementById('phoneDetailsBalance');
+        this.phoneDetailsStatus = document.getElementById('phoneDetailsStatus');
+        this.phoneDetailsNumber = document.getElementById('phoneDetailsNumber');
+        this.phoneDetailsFooter = document.getElementById('phoneDetailsFooter');
+        this.phoneTopUpForm = document.getElementById('phoneTopUpForm');
+        this.phoneTopUpSubmit = document.getElementById('phoneTopUpSubmit');
+        this.topUpAmountInput = document.getElementById('topUpAmount');
+        this.topUpMethodSelect = document.getElementById('topUpMethod');
+
         this.init();
     }
 
@@ -18,6 +34,7 @@ class DashboardManager {
         }
 
         this.setupEventListeners();
+        this.bindModalEvents();
         this.loadDashboardData();
     }
 
@@ -70,6 +87,32 @@ class DashboardManager {
             statisticsPeriod.addEventListener('change', () => {
                 this.loadStatistics();
             });
+        }
+    }
+
+    bindModalEvents() {
+        if (!this.phoneModal) {
+            return;
+        }
+
+        if (this.phoneDetailsClose) {
+            this.phoneDetailsClose.addEventListener('click', () => this.closePhoneDetails());
+        }
+
+        this.phoneModal.addEventListener('click', (event) => {
+            if (event.target === this.phoneModal) {
+                this.closePhoneDetails();
+            }
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && !this.phoneModal.classList.contains('hidden')) {
+                this.closePhoneDetails();
+            }
+        });
+
+        if (this.phoneTopUpForm) {
+            this.phoneTopUpForm.addEventListener('submit', (event) => this.handlePhoneTopUp(event));
         }
     }
 
@@ -214,12 +257,13 @@ class DashboardManager {
         const grid = document.getElementById('phoneNumbersGrid');
         if (!grid) return;
 
-        const phoneArray = phones && phones.length > 0 ? phones : [];
+        const phoneArray = Array.isArray(phones) ? phones : [];
+        this.phoneNumbers = phoneArray;
 
-        const phoneCards = phoneArray.map(phone => {
+        const phoneCards = phoneArray.map((phone, index) => {
             const phoneNumber = phone.number || phone.phoneNumber || phone.phone || 'N/A';
             return `
-            <div class="phone-card" data-phone-id="${phone.id}">
+            <div class="phone-card" data-phone-id="${phone.id}" data-phone-index="${index}">
                 <div class="phone-card-header">
                     <div>
                         <div class="phone-number">${phone.numberName || phoneNumber}</div>
@@ -281,6 +325,210 @@ class DashboardManager {
             addPhoneCardElement.addEventListener('click', () => {
                 window.location.href = 'register-phone.html';
             });
+        }
+
+        this.bindPhoneCardEvents(grid);
+    }
+
+    bindPhoneCardEvents(grid) {
+        const cards = grid.querySelectorAll('.phone-card[data-phone-index]');
+        cards.forEach(card => {
+            if (card.id === 'addPhoneCard') {
+                return;
+            }
+
+            card.addEventListener('click', () => {
+                const index = Number(card.getAttribute('data-phone-index'));
+                const phone = this.phoneNumbers[index];
+                if (phone) {
+                    this.openPhoneDetails(phone);
+                }
+            });
+
+            const menu = card.querySelector('.phone-menu');
+            if (menu) {
+                menu.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    const index = Number(card.getAttribute('data-phone-index'));
+                    const phone = this.phoneNumbers[index];
+                    if (phone) {
+                        this.openPhoneDetails(phone);
+                    }
+                });
+            }
+        });
+    }
+
+    openPhoneDetails(phone) {
+        if (!this.phoneModal) {
+            return;
+        }
+
+        this.selectedPhone = phone;
+        this.populatePhoneDetails(phone);
+        this.setModalFooter('');
+
+        this.phoneModal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+        if (this.topUpAmountInput) {
+            this.topUpAmountInput.focus({ preventScroll: true });
+        }
+    }
+
+    closePhoneDetails() {
+        if (!this.phoneModal) {
+            return;
+        }
+
+        this.phoneModal.classList.add('hidden');
+        document.body.style.overflow = '';
+        if (this.phoneTopUpForm) {
+            this.phoneTopUpForm.reset();
+        }
+        this.selectedPhone = null;
+        this.setModalFooter('');
+    }
+
+    populatePhoneDetails(phone) {
+        const phoneNumber = phone.number || phone.phoneNumber || phone.phone || 'N/A';
+        const displayName = phone.numberName || phoneNumber;
+
+        if (this.phoneDetailsTitle) {
+            this.phoneDetailsTitle.textContent = displayName;
+        }
+
+        if (this.phoneDetailsSubtitle) {
+            const subtitlePieces = [];
+            if (phoneNumber) {
+                subtitlePieces.push(this.maskPhoneNumber(phoneNumber));
+            }
+            if (phone.id) {
+                subtitlePieces.push(`ID: ${phone.id}`);
+            }
+            this.phoneDetailsSubtitle.textContent = subtitlePieces.join(' · ');
+        }
+
+        if (this.phoneDetailsBalance) {
+            this.phoneDetailsBalance.textContent = this.formatCurrency(phone.balance || 0);
+        }
+
+        if (this.phoneDetailsStatus) {
+            const status = (phone.status || 'active').toLowerCase();
+            this.phoneDetailsStatus.textContent = status === 'active' ? 'Активен' : 'Неактивен';
+            this.phoneDetailsStatus.classList.toggle('inactive', status !== 'active');
+        }
+
+        if (this.phoneDetailsNumber) {
+            this.phoneDetailsNumber.textContent = phoneNumber;
+        }
+    }
+
+    async handlePhoneTopUp(event) {
+        event.preventDefault();
+        if (!this.selectedPhone || !this.phoneTopUpForm) {
+            return;
+        }
+
+        const amountValue = parseFloat(this.topUpAmountInput?.value || '0');
+        const methodValue = this.topUpMethodSelect?.value || '';
+
+        if (!Number.isFinite(amountValue) || amountValue <= 0) {
+            this.setModalFooter('Введите корректную сумму для пополнения', 'error');
+            return;
+        }
+
+        if (!methodValue) {
+            this.setModalFooter('Выберите способ пополнения', 'error');
+            return;
+        }
+
+        this.setTopUpLoading(true);
+        this.setModalFooter('Выполняем пополнение...', 'info');
+
+        const phoneId = this.selectedPhone.id || this.selectedPhone.phoneId || this.selectedPhone.phoneNumberId;
+        const clientId = this.clientId || this.userData?.clientId || this.selectedPhone.clientId;
+
+        const payload = {
+            amount: amountValue,
+            method: methodValue,
+            phoneNumber: this.selectedPhone.number || this.selectedPhone.phoneNumber || this.selectedPhone.phone,
+            phoneId,
+            clientId
+        };
+
+        try {
+            let response;
+
+            if (phoneId) {
+                response = await fetch(`/api/v1/phoneNumber/${phoneId}/payments`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+            }
+
+            if (!response || !response.ok) {
+                response = await fetch('/api/v1/payments', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        phoneNumberId: phoneId,
+                        clientId,
+                        amount: amountValue,
+                        paymentType: methodValue,
+                        description: 'Пополнение через личный кабинет'
+                    })
+                });
+            }
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || 'Не удалось выполнить пополнение');
+            }
+
+            this.setModalFooter('Баланс успешно пополнен', 'success');
+            this.phoneTopUpForm.reset();
+
+            const updatedBalance = (this.selectedPhone.balance || 0) + amountValue;
+            this.selectedPhone.balance = updatedBalance;
+            this.populatePhoneDetails(this.selectedPhone);
+            this.renderPhoneNumbers(this.phoneNumbers);
+
+            await this.loadRecentTransactions();
+            await this.loadStatistics();
+        } catch (error) {
+            console.error('Ошибка пополнения баланса:', error);
+            this.setModalFooter(error.message || 'Не удалось выполнить пополнение', 'error');
+        } finally {
+            this.setTopUpLoading(false);
+        }
+    }
+
+    setTopUpLoading(isLoading) {
+        if (!this.phoneTopUpSubmit) {
+            return;
+        }
+
+        if (!this.phoneTopUpSubmit.dataset.originalText) {
+            this.phoneTopUpSubmit.dataset.originalText = this.phoneTopUpSubmit.textContent.trim();
+        }
+
+        this.phoneTopUpSubmit.disabled = isLoading;
+        this.phoneTopUpSubmit.textContent = isLoading ? 'Пополнение...' : this.phoneTopUpSubmit.dataset.originalText;
+    }
+
+    setModalFooter(message, type = '') {
+        if (!this.phoneDetailsFooter) {
+            return;
+        }
+
+        this.phoneDetailsFooter.textContent = message;
+        this.phoneDetailsFooter.classList.remove('success', 'error');
+
+        if (type === 'success') {
+            this.phoneDetailsFooter.classList.add('success');
+        } else if (type === 'error') {
+            this.phoneDetailsFooter.classList.add('error');
         }
     }
 

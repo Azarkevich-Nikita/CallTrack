@@ -23,6 +23,13 @@
                 <a href="registration_payments.html">Платежи</a>
                 <a href="registration_calls.html">Звонки</a>
                 <a href="reports_payments.html">Отчеты</a>
+                <a href="dashboard.html" class="hidden user-link" data-auth="user" data-role="dashboard-link">
+                    <span class="user-avatar" data-role="user-initial">ЛК</span>
+                    <span data-role="user-name">Личный кабинет</span>
+                </a>
+                <a href="login.html" data-auth="guest">Вход</a>
+                <a href="registration.html" data-auth="guest">Регистрация</a>
+                <a href="#" class="hidden" data-auth="user" data-role="logout-link">Выйти</a>
             </div>
         </nav>
     </header>
@@ -134,6 +141,7 @@
     </div>
 
     <!-- Подключение скриптов -->
+    <script src="scripts/auth-header.js"></script>
     <script src="scripts/tariffManager.js"></script>
 </body>
 </html>

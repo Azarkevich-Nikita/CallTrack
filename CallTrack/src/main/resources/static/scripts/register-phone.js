@@ -128,7 +128,7 @@ class PhoneRegistrationManager {
 
         const formData = {
             phone: formattedNumber,
-            phoneName: this.phoneNameInput.value.trim() || null,
+            numberName: this.phoneNameInput.value.trim() || null,
             clientId: this.clientId,
         };
 

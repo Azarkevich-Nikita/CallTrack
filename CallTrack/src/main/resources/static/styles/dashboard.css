@@ -299,6 +299,190 @@
     color: var(--muted);
 }
 
+/* Модальное окно телефона */
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    backdrop-filter: blur(6px);
+    z-index: 1000;
+}
+
+.modal-card {
+    position: relative;
+    width: min(520px, 100%);
+    background: var(--card);
+    border-radius: 16px;
+    box-shadow: 0 20px 50px rgba(15, 23, 42, 0.25);
+    padding: 28px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 8px;
+    color: var(--muted);
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.modal-close:hover {
+    background: rgba(239, 246, 255, 0.8);
+    color: var(--text);
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.modal-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #dbeafe, #e0f2fe);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #1d4ed8;
+}
+
+.modal-title {
+    margin: 0;
+    font-size: 22px;
+    color: var(--text);
+}
+
+.modal-subtitle {
+    margin: 4px 0 0 0;
+    font-size: 14px;
+    color: var(--muted);
+}
+
+.modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.modal-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+}
+
+.info-block {
+    background: #f8fafc;
+    border: 1px solid rgba(191, 219, 254, 0.6);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.info-label {
+    font-size: 12px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.info-value {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+    word-break: break-word;
+}
+
+.info-status {
+    font-size: 14px;
+    font-weight: 600;
+    color: #16a34a;
+}
+
+.info-status.inactive {
+    color: #dc2626;
+}
+
+.topup-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.topup-form .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.topup-form .form-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.topup-form .input-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.topup-form .form-input,
+.topup-form .form-select {
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 14px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.topup-form .form-input:focus,
+.topup-form .form-select:focus {
+    outline: none;
+    border-color: var(--brand);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.topup-form .input-hint {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.topup-submit {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+}
+
+.modal-footer {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.modal-footer.success {
+    color: var(--success);
+}
+
+.modal-footer.error {
+    color: var(--error);
+}
+
 /* Нижняя секция */
 .dashboard-bottom {
     display: grid;

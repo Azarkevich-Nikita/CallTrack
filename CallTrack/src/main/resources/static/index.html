@@ -241,12 +241,14 @@
             <span class="brand-name">CallTrack</span>
         </div>
         <div class="right">
-            <a href="#features">Функции</a>
             <a href="tariffs.html">Тарифы</a>
-            <a href="#steps">Как это работает</a>
-            <a href="#faq">FAQ</a>
-            <a href="login.html">Вход</a>
-            <a href="registration.html">Регистрация</a>
+            <a href="dashboard.html" class="hidden user-link" data-auth="user" data-role="dashboard-link">
+                <span class="user-avatar" data-role="user-initial">ЛК</span>
+                <span data-role="user-name">Личный кабинет</span>
+            </a>
+            <a href="login.html" data-auth="guest">Вход</a>
+            <a href="registration.html" data-auth="guest">Регистрация</a>
+            <a href="#" class="hidden" data-auth="user" data-role="logout-link">Выйти</a>
         </div>
     </nav>
     </header>
@@ -422,7 +424,8 @@
     window.onload = updateDate;
     setInterval(updateDate, 60000);
 </script>
-<script src="/scripts/clientSearch.js"></script>
-<script src="/scripts/ui.js" type="module"></script>
+<script src="scripts/auth-header.js"></script>
+<script src="scripts/clientSearch.js"></script>
+<script src="scripts/ui.js" type="module"></script>
 </body>
 </html>
