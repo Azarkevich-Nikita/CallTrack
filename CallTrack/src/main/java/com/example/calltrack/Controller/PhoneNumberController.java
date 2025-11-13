@@ -1,12 +1,9 @@
 package com.example.calltrack.Controller;
 
-import com.example.calltrack.DTO.ClientRequestDTO;
 import com.example.calltrack.DTO.PhoneNumberRequestDTO;
 import com.example.calltrack.Entity.PhoneNumber;
-import com.example.calltrack.Repository.PhoneNumberRepository;
 import com.example.calltrack.Service.PhoneNumberService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,6 +20,11 @@ public class PhoneNumberController {
     @PostMapping("/registerNewPhone")
     public ResponseEntity<String> registerNewPhone(@RequestBody PhoneNumberRequestDTO phoneNumberRequestDTO) {
         return  phoneNumberService.registerPhoneNumber(phoneNumberRequestDTO);
+    }
+
+    @DeleteMapping("/phone/{id}")
+    public ResponseEntity<String> deletePhone(@PathVariable Long id) {
+        return phoneNumberService.deletePhoneNumber(id);
     }
 
     @GetMapping("/phoneNumber/{id}")

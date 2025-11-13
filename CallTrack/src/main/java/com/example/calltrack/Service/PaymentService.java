@@ -7,9 +7,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 @Service
 public class PaymentService {
     public String addPayments(@RequestBody PaymentRequestDTO paymentRequestDTO) {
-
-
-
         return "Done!";
     }
 }

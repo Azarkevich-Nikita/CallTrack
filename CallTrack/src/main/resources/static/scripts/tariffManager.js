@@ -369,9 +369,6 @@ class TariffManager {
         `;
     }
 
-    /**
-     * Отображение пустого состояния
-     */
     showEmptyState() {
         const hasFilters = this.hasActiveFilters();
         const title = hasFilters ? 'Тарифы не найдены' : 'Тарифы не найдены';
@@ -416,7 +413,6 @@ class TariffManager {
     }
 }
 
-// Инициализация при загрузке страницы
 let tariffManager;
 document.addEventListener('DOMContentLoaded', () => {
     tariffManager = new TariffManager();

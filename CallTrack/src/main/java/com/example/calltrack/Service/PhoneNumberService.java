@@ -42,9 +42,18 @@ public class PhoneNumberService {
                 .map(PhoneNumber::getClient);
     }
 
+    public ResponseEntity<String> deletePhoneNumber(Long id) {
+        return phoneNumberRepository.findById(id)
+                .map(phone -> {
+                    phoneNumberRepository.delete(phone);
+                    return ResponseEntity.ok("Phone number deleted successfully");
+                })
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
     public ResponseEntity<String> registerPhoneNumber(PhoneNumberRequestDTO phoneNumberRequestDTO) {
         Client client = clientService.findClientById(phoneNumberRequestDTO.getClientId())
-                .orElseThrow(() -> new RuntimeException("Клиент с таким номером не найден"));
+                .orElseThrow(() -> new RuntimeException("Client not found"));
 
         boolean isPrimary = findByClientId(client.getClientId()).isEmpty();
 

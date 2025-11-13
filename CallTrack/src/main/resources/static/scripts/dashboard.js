@@ -258,23 +258,49 @@ class DashboardManager {
         if (!grid) return;
 
         const phoneArray = Array.isArray(phones) ? phones : [];
-        this.phoneNumbers = phoneArray;
+        const normalizedPhones = phoneArray.map((phone, index) => {
+            if (phone && phone.__uid && phone.__backendId !== undefined) {
+                return phone;
+            }
+            const backendId = phone.numberId ?? phone.id ?? phone.phoneId ?? phone.phoneNumberId ?? phone.phoneIdNumber ?? null;
+            const fallbackSeed = phone.number || phone.phoneNumber || phone.phone || `phone-${index}`;
+            const uid = String(backendId ?? `${fallbackSeed}-${index}`);
+            return {
+                ...phone,
+                __backendId: backendId,
+                __uid: uid
+            };
+        });
 
-        const phoneCards = phoneArray.map((phone, index) => {
+        this.phoneNumbers = normalizedPhones;
+
+        const phoneCards = normalizedPhones.map((phone, index) => {
             const phoneNumber = phone.number || phone.phoneNumber || phone.phone || 'N/A';
+            const phoneUid = phone.__uid;
+            const backendIdAttr = phone.__backendId != null ? String(phone.__backendId) : '';
             return `
-            <div class="phone-card" data-phone-id="${phone.id}" data-phone-index="${index}">
+            <div class="phone-card" data-phone-uid="${phoneUid}" data-phone-index="${index}">
                 <div class="phone-card-header">
-                    <div>
+                    <div class="phone-card-info">
                         <div class="phone-number">${phone.numberName || phoneNumber}</div>
                         <div class="phone-masked">${this.maskPhoneNumber(phoneNumber)}</div>
                     </div>
-                    <div class="phone-menu">
-                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="12" cy="5" r="2" fill="currentColor"/>
-                            <circle cx="12" cy="12" r="2" fill="currentColor"/>
-                            <circle cx="12" cy="19" r="2" fill="currentColor"/>
-                        </svg>
+                    <div class="phone-menu-container" data-phone-uid="${phoneUid}">
+                        <button type="button" class="phone-menu" data-action="toggle-dropdown" data-phone-uid="${phoneUid}" aria-haspopup="true" aria-expanded="false" aria-label="Дополнительные действия">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="12" cy="5" r="2" fill="currentColor"/>
+                                <circle cx="12" cy="12" r="2" fill="currentColor"/>
+                                <circle cx="12" cy="19" r="2" fill="currentColor"/>
+                            </svg>
+                        </button>
+                        <div class="phone-dropdown hidden" data-dropdown-uid="${phoneUid}" role="menu">
+                            <button type="button" class="dropdown-item delete-item" data-action="delete-phone" data-phone-uid="${phoneUid}" data-phone-backend-id="${backendIdAttr}" role="menuitem">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                Удалить номер
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div class="phone-balance">${this.formatCurrency(phone.balance || 0)}</div>
@@ -307,7 +333,7 @@ class DashboardManager {
             </div>
         `;
 
-        if (phoneArray.length === 0) {
+        if (normalizedPhones.length === 0) {
             grid.innerHTML = `
                 <div class="empty-state">
                     <h3>Номера телефонов не найдены</h3>
@@ -319,7 +345,6 @@ class DashboardManager {
             grid.innerHTML = phoneCards + addPhoneCard;
         }
 
-        // Добавляем обработчик для карточки добавления
         const addPhoneCardElement = document.getElementById('addPhoneCard');
         if (addPhoneCardElement) {
             addPhoneCardElement.addEventListener('click', () => {
@@ -331,32 +356,129 @@ class DashboardManager {
     }
 
     bindPhoneCardEvents(grid) {
-        const cards = grid.querySelectorAll('.phone-card[data-phone-index]');
-        cards.forEach(card => {
-            if (card.id === 'addPhoneCard') {
+        if (!grid) {
+            return;
+        }
+
+        if (this.phoneGrid && this.phoneGridClickHandler) {
+            this.phoneGrid.removeEventListener('click', this.phoneGridClickHandler);
+        }
+
+        this.phoneGrid = grid;
+        this.phoneGridClickHandler = (event) => {
+            const toggleButton = event.target.closest('[data-action="toggle-dropdown"]');
+            if (toggleButton) {
+                event.preventDefault();
+                event.stopPropagation();
+                const phoneUid = toggleButton.getAttribute('data-phone-uid');
+                this.togglePhoneDropdown(phoneUid);
                 return;
             }
 
-            card.addEventListener('click', () => {
+            const deleteButton = event.target.closest('[data-action="delete-phone"]');
+            if (deleteButton) {
+                event.preventDefault();
+                event.stopPropagation();
+                const phoneUid = deleteButton.getAttribute('data-phone-uid');
+                if (phoneUid) {
+                    this.closeAllPhoneDropdowns();
+                    this.deletePhoneNumber(phoneUid);
+                }
+                return;
+            }
+
+            const card = event.target.closest('.phone-card[data-phone-index]');
+            if (card && !event.target.closest('.phone-menu-container')) {
                 const index = Number(card.getAttribute('data-phone-index'));
                 const phone = this.phoneNumbers[index];
                 if (phone) {
                     this.openPhoneDetails(phone);
                 }
+            }
+        };
+
+        this.phoneGrid.addEventListener('click', this.phoneGridClickHandler);
+
+        if (!this.documentClickHandler) {
+            this.documentClickHandler = (event) => {
+                if (!event.target.closest('.phone-menu-container')) {
+                    this.closeAllPhoneDropdowns();
+                }
+            };
+            document.addEventListener('click', this.documentClickHandler);
+        }
+    }
+
+    togglePhoneDropdown(phoneUid) {
+        if (!phoneUid || !this.phoneGrid) {
+            return;
+        }
+
+        const dropdown = this.phoneGrid.querySelector(`[data-dropdown-uid="${phoneUid}"]`);
+        if (!dropdown) {
+            return;
+        }
+
+        const isHidden = dropdown.classList.contains('hidden');
+        this.closeAllPhoneDropdowns();
+
+        if (isHidden) {
+            dropdown.classList.remove('hidden');
+        }
+    }
+
+    closeAllPhoneDropdowns() {
+        if (!this.phoneGrid) {
+            return;
+        }
+        const dropdowns = this.phoneGrid.querySelectorAll('.phone-dropdown');
+        dropdowns.forEach(dd => dd.classList.add('hidden'));
+    }
+
+    async deletePhoneNumber(phoneUid) {
+        if (!phoneUid) {
+            return;
+        }
+
+        const phone = this.phoneNumbers.find(p => p.__uid === String(phoneUid));
+
+        if (!phone) {
+            alert('Не удалось определить номер телефона для удаления.');
+            return;
+        }
+
+        const backendId = phone.__backendId ?? phone.numberId ?? phone.id;
+        if (backendId == null) {
+            alert('У выбранного номера отсутствует идентификатор для удаления.');
+            return;
+        }
+
+        const phoneNumber = phone.number || phone.phoneNumber || phone.phone || 'номер';
+        if (!confirm(`Вы уверены, что хотите удалить номер ${this.maskPhoneNumber(phoneNumber)}?`)) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/v1/phone/${backendId}`, {
+                method: 'DELETE'
             });
 
-            const menu = card.querySelector('.phone-menu');
-            if (menu) {
-                menu.addEventListener('click', (event) => {
-                    event.stopPropagation();
-                    const index = Number(card.getAttribute('data-phone-index'));
-                    const phone = this.phoneNumbers[index];
-                    if (phone) {
-                        this.openPhoneDetails(phone);
-                    }
-                });
+            if (!response.ok) {
+                const errorText = await response.text().catch(() => '');
+                throw new Error(`Ошибка удаления: ${response.status} ${response.statusText}${errorText ? ' - ' + errorText : ''}`);
             }
-        });
+
+            this.phoneNumbers = this.phoneNumbers.filter(p => p.__uid !== String(phoneUid));
+
+            this.renderPhoneNumbers(this.phoneNumbers);
+        } catch (error) {
+            console.error('Ошибка удаления номера:', error);
+            alert(`Не удалось удалить номер: ${error.message}`);
+        }
+    }
+
+    showSuccessMessage(message) {
+        console.log(message);
     }
 
     openPhoneDetails(phone) {
