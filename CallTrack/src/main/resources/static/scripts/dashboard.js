@@ -283,7 +283,7 @@ class DashboardManager {
                 <div class="phone-card-header">
                     <div class="phone-card-info">
                         <div class="phone-number">${phone.numberName || phoneNumber}</div>
-                        <div class="phone-masked">${this.maskPhoneNumber(phoneNumber)}</div>
+                        <div class="phone-masked">+${this.maskPhoneNumber(phoneNumber)}</div>
                     </div>
                     <div class="phone-menu-container" data-phone-uid="${phoneUid}">
                         <button type="button" class="phone-menu" data-action="toggle-dropdown" data-phone-uid="${phoneUid}" aria-haspopup="true" aria-expanded="false" aria-label="Дополнительные действия">
@@ -572,8 +572,7 @@ class DashboardManager {
 
         const payload = {
             amount: amountValue,
-            method: methodValue,
-            phoneNumber: this.selectedPhone.number || this.selectedPhone.phoneNumber || this.selectedPhone.phone,
+            paymentType: methodValue,
             phoneId,
             clientId
         };
@@ -582,7 +581,7 @@ class DashboardManager {
             let response;
 
             if (phoneId) {
-                response = await fetch(`/api/v1/phoneNumber/${phoneId}/payments`, {
+                response = await fetch(`/api/v1/payments/${phoneId}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)

@@ -2,6 +2,7 @@ package com.example.calltrack.Controller;
 
 import com.example.calltrack.DTO.PaymentRequestDTO;
 import com.example.calltrack.Service.PaymentService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,8 +15,9 @@ public class PaymentsController {
         this.paymentService = paymentService;
     }
 
-    @PostMapping("/payments")
-    public String addPayments(@RequestBody PaymentRequestDTO paymentRequestDTO) {
-        return paymentService.addPayments(paymentRequestDTO);
+    @PostMapping("/payments/")
+    public ResponseEntity<String> addPaymentsOnPhone(@RequestBody PaymentRequestDTO paymentRequestDTO) {
+        return paymentService.addPaymentsOnNumber(paymentRequestDTO);
     }
+
 }
