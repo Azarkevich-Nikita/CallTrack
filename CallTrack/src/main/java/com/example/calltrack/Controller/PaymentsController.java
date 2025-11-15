@@ -15,9 +15,8 @@ public class PaymentsController {
         this.paymentService = paymentService;
     }
 
-    @PostMapping("/payments/")
+    @PostMapping("/payments")
     public ResponseEntity<String> addPaymentsOnPhone(@RequestBody PaymentRequestDTO paymentRequestDTO) {
         return paymentService.addPaymentsOnNumber(paymentRequestDTO);
     }
-
 }

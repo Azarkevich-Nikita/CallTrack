@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -35,4 +37,7 @@ public class PhoneNumber {
 
     @Column(name = "is_primary")
     private Boolean isPrimary = false;
+
+    @Column(name = "number_balance")
+    private BigDecimal numberBalance;
 }

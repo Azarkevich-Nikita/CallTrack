@@ -16,4 +16,5 @@ public class PaymentRequestDTO {
     private BigDecimal amount;
     private String paymentType;
     private Long clientId;
+
 }

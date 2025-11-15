@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,7 +31,9 @@ public class PhoneNumberService {
     }
 
     public ResponseEntity<List<PhoneNumber>> getByClientId(Long clientId) {
-        return ResponseEntity.ok(phoneNumberRepository.findAllByClient_ClientId(clientId));
+        List<PhoneNumber> numbers = phoneNumberRepository.findAllByClient_ClientId(clientId);
+        numbers.sort(Comparator.comparing(PhoneNumber::getNumberId));
+        return ResponseEntity.ok(numbers);
     }
 
     public List<PhoneNumber> findByClientId(Long clientId) {

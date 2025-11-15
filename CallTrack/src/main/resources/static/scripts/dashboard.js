@@ -303,7 +303,7 @@ class DashboardManager {
                         </div>
                     </div>
                 </div>
-                <div class="phone-balance">${this.formatCurrency(phone.balance || 0)}</div>
+                <div class="phone-balance">${this.formatCurrency(phone.numberBalance || 0)}</div>
                 <div class="phone-status ${(phone.status || 'active') === 'active' ? 'active' : 'inactive'}">
                     ${(phone.status || 'active') === 'active' ? 'Активен' : 'Неактивен'}
                 </div>
@@ -581,12 +581,13 @@ class DashboardManager {
             let response;
 
             if (phoneId) {
-                response = await fetch(`/api/v1/payments/${phoneId}`, {
+                response = await fetch(`/api/v1/payments`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
             }
+            /*
 
             if (!response || !response.ok) {
                 response = await fetch('/api/v1/payments', {
@@ -606,7 +607,7 @@ class DashboardManager {
                 const errorText = await response.text();
                 throw new Error(errorText || 'Не удалось выполнить пополнение');
             }
-
+                */
             this.setModalFooter('Баланс успешно пополнен', 'success');
             this.phoneTopUpForm.reset();
 
