@@ -603,83 +603,88 @@
 }
 
 .transaction-item {
-    display: grid;
-    grid-template-columns: auto 1fr auto auto;
-    gap: 12px;
     padding: 12px;
     border-radius: 8px;
     transition: background 0.2s ease;
-    cursor: pointer;
-    align-items: center;
+    border-bottom: 1px solid var(--border);
+}
+
+.transaction-item:last-child {
+    border-bottom: none;
 }
 
 .transaction-item:hover {
     background: #f9fafb;
 }
 
-.transaction-date {
-    font-size: 12px;
-    color: var(--muted);
-    white-space: nowrap;
+.transaction-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.transaction-info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+    min-width: 0;
 }
 
 .transaction-description {
     font-size: 14px;
+    font-weight: 500;
     color: var(--text);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    line-height: 1.4;
 }
 
-.transaction-type {
-    font-size: 12px;
-    color: var(--muted);
-    white-space: nowrap;
-}
-
-.transaction-category {
+.transaction-details {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.transaction-method {
+    font-size: 12px;
+    color: var(--muted);
+    padding: 2px 8px;
+    background: #f3f4f6;
+    border-radius: 4px;
+}
+
+.transaction-balance {
     font-size: 12px;
     color: var(--muted);
 }
 
-.category-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
+.transaction-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    flex-shrink: 0;
 }
 
 .transaction-amount {
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 600;
     white-space: nowrap;
 }
 
 .transaction-amount.positive {
-    color: var(--brand);
+    color: #10b981;
 }
 
 .transaction-amount.negative {
     color: var(--text);
 }
 
-.transaction-expand {
-    cursor: pointer;
-    padding: 4px;
-    border-radius: 4px;
-    transition: background 0.2s ease;
-}
-
-.transaction-expand:hover {
-    background: #f3f4f6;
-}
-
-.transaction-expand svg {
-    width: 16px;
-    height: 16px;
+.transaction-date {
+    font-size: 12px;
     color: var(--muted);
+    white-space: nowrap;
 }
 
 .see-more-link {
@@ -820,14 +825,17 @@
         grid-template-columns: 1fr;
     }
 
-    .transaction-item {
-        grid-template-columns: 1fr;
-        gap: 8px;
+    .transaction-main {
+        flex-direction: column;
+        align-items: flex-start;
     }
 
-    .transaction-date,
-    .transaction-type,
-    .transaction-category {
+    .transaction-right {
+        align-items: flex-start;
+        width: 100%;
+    }
+
+    .transaction-date {
         font-size: 11px;
     }
 }

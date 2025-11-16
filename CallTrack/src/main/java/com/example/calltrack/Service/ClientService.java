@@ -4,12 +4,15 @@ import com.example.calltrack.DTO.ClientRequestDTO;
 import com.example.calltrack.Entity.Client;
 import com.example.calltrack.Repository.ClientRepository;
 import com.example.calltrack.Repository.PhoneNumberRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -46,7 +49,7 @@ public class ClientService {
                 .birthDate(clientDTO.getBirthDate())
                 .email(clientDTO.getEmail())
                 .password(passwordEncoder.encode(clientDTO.getPassword()))
-                .balance(0.0)
+                .balance(BigDecimal.ZERO)
                 .status("USER")
                 .allowedCreditMinutes(0)
                 .createdAt(LocalDateTime.now())
@@ -71,13 +74,30 @@ public class ClientService {
                     .clientId(findingClient.getClientId())
                     .fullName(findingClient.getFullName())
                     .email(findingClient.getEmail())
-                    .balance(0.0)
+                    .balance(BigDecimal.ZERO)
                     .status("USER")
                     .build());
         }
         System.out.println("Wrong password");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body("Some think wrong!");
+    }
+
+    public BigDecimal getBalanceAfter(Long id) {
+        return clientRepository.findById(id).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND)).getBalance();
+    }
+
+    @Transactional
+    public boolean updatePhoneBalance(Long client_id, BigDecimal amount) {
+        Client client = clientRepository.findById(client_id).orElse(null);
+        if (client != null) {
+            client.setBalance(client.getBalance().add(amount));
+            clientRepository.save(client);
+        }
+        else  {
+            return false;
+        }
+        return true;
     }
 
 }

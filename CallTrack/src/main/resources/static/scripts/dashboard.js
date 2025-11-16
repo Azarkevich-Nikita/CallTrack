@@ -567,47 +567,34 @@ class DashboardManager {
         this.setTopUpLoading(true);
         this.setModalFooter('Выполняем пополнение...', 'info');
 
-        const phoneId = this.selectedPhone.id || this.selectedPhone.phoneId || this.selectedPhone.phoneNumberId;
+        const phoneId = this.selectedPhone.__backendId || this.selectedPhone.id || this.selectedPhone.phoneId || this.selectedPhone.phoneNumberId || this.selectedPhone.numberId;
         const clientId = this.clientId || this.userData?.clientId || this.selectedPhone.clientId;
+
+        if (!phoneId) {
+            this.setTopUpLoading(false);
+            this.setModalFooter('Не удалось определить идентификатор номера телефона', 'error');
+            return;
+        }
 
         const payload = {
             amount: amountValue,
             paymentType: methodValue,
             phoneId,
-            clientId
+            clientId: +clientId
         };
 
         try {
-            let response;
-
-            if (phoneId) {
-                response = await fetch(`/api/v1/payments`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-            }
-            /*
-
-            if (!response || !response.ok) {
-                response = await fetch('/api/v1/payments', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        phoneNumberId: phoneId,
-                        clientId,
-                        amount: amountValue,
-                        paymentType: methodValue,
-                        description: 'Пополнение через личный кабинет'
-                    })
-                });
-            }
+            const response = await fetch(`/api/v1/payments`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
 
             if (!response.ok) {
                 const errorText = await response.text();
                 throw new Error(errorText || 'Не удалось выполнить пополнение');
             }
-                */
+
             this.setModalFooter('Баланс успешно пополнен', 'success');
             this.phoneTopUpForm.reset();
 
@@ -662,7 +649,7 @@ class DashboardManager {
                 return;
             }
 
-            let response = await fetch(`/api/v1/clients/${clientId}/payments/recent`, {
+            const response = await fetch(`/api/v1/clients/${clientId}/payments/recent`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
@@ -670,17 +657,8 @@ class DashboardManager {
             });
 
             if (!response.ok) {
-                response = await fetch(`/api/v1/payments/recent?clientId=${clientId}`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (!response.ok) {
-                    this.renderTransactions([]);
-                    return;
-                }
+                this.renderTransactions([]);
+                return;
             }
 
             const transactions = await response.json();
@@ -699,10 +677,12 @@ class DashboardManager {
         // Преобразуем транзакцию в унифицированный формат
         return {
             id: transaction.id,
-            date: this.formatTransactionDate(transaction.date || transaction.paymentDate || transaction.createdAt),
-            description: transaction.description || transaction.paymentType || transaction.type || 'Операция',
-            type: transaction.type || transaction.paymentType || 'Операция',
+            date: this.formatTransactionDate(transaction.createdAt || transaction.date || transaction.paymentDate),
+            description: transaction.amount > 0 ? 'Пополенение' : 'Списание',
+            type: transaction.amount > 0 ? 'Пополенение' : 'Списание',
             amount: transaction.amount || transaction.sum || 0,
+            paymentMethod: transaction.paymentMethod || transaction.payment_method || 'Не указан',
+            balanceAfter: transaction.balanceAfter || transaction.balance_after || null,
             category: transaction.category || this.detectCategory(transaction)
         };
     }
@@ -713,14 +693,25 @@ class DashboardManager {
         try {
             const date = new Date(dateString);
             const now = new Date();
-            const diffTime = Math.abs(now - date);
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            // Сравниваем только даты (без времени)
+            const dateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+            const nowOnly = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            
+            const diffTime = nowOnly - dateOnly;
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
             if (diffDays === 0) return 'Сегодня';
             if (diffDays === 1) return 'Вчера';
-            if (diffDays <= 7) return `${diffDays} дня назад`;
+            if (diffDays === -1) return 'Завтра';
+            if (diffDays > 0 && diffDays <= 7) return `${diffDays} дня назад`;
+            if (diffDays < 0 && diffDays >= -7) return `Через ${Math.abs(diffDays)} дня`;
             
-            return date.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' });
+            return date.toLocaleDateString('ru-RU', { 
+                day: '2-digit', 
+                month: '2-digit',
+                year: 'numeric'
+            });
         } catch (e) {
             return dateString;
         }
@@ -749,40 +740,50 @@ class DashboardManager {
         // Ограничиваем до 5 последних транзакций
         const recentTransactions = transactions.slice(0, 5);
 
-        const categoryColors = {
-            'Пополнение': '#10b981',
-            'Абонплата': '#3b82f6',
-            'Звонки': '#f59e0b',
-            'SMS': '#8b5cf6',
-            'Интернет': '#ec4899'
-        };
-
         list.innerHTML = recentTransactions.map(transaction => {
-            const category = transaction.category || 'Другое';
-            const color = categoryColors[category] || '#6b7280';
             const amount = transaction.amount || 0;
             const isPositive = amount > 0;
+            const paymentMethod = this.formatPaymentMethod(transaction.paymentMethod);
+            const balanceAfter = transaction.balanceAfter;
 
             return `
                 <div class="transaction-item">
-                    <div class="transaction-date">${transaction.date || 'N/A'}</div>
-                    <div class="transaction-description">${transaction.description || transaction.type || 'Операция'}</div>
-                    <div class="transaction-type">${transaction.type || 'Операция'}</div>
-                    <div class="transaction-category">
-                        <span class="category-dot" style="background-color: ${color}"></span>
-                        <span>${category}</span>
-                    </div>
-                    <div class="transaction-amount ${isPositive ? 'positive' : 'negative'}">
-                        ${isPositive ? '+' : ''}${this.formatCurrency(amount)}
-                    </div>
-                    <div class="transaction-expand">
-                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
+                    <div class="transaction-main">
+                        <div class="transaction-info">
+                            <div class="transaction-description">${transaction.description || transaction.type || 'Операция'}</div>
+                            <div class="transaction-details">
+                                <span class="transaction-method">${paymentMethod}</span>
+                                ${balanceAfter !== null && balanceAfter !== undefined ? `<span class="transaction-balance">Баланс: ${this.formatCurrency(balanceAfter)}</span>` : ''}
+                            </div>
+                        </div>
+                        <div class="transaction-right">
+                            <div class="transaction-amount ${isPositive ? 'positive' : 'negative'}">
+                                ${isPositive ? '+' : ''}${this.formatCurrency(amount)}
+                            </div>
+                            <div class="transaction-date">${transaction.date || 'N/A'}</div>
+                        </div>
                     </div>
                 </div>
             `;
         }).join('');
+    }
+
+    formatPaymentMethod(method) {
+        if (!method) return 'Не указан';
+        
+        const methodMap = {
+            'card': 'Банковская карта',
+            'transfer': 'Банковский перевод',
+            'cash': 'Наличные',
+            'bank_card': 'Банковская карта',
+            'bank_transfer': 'Банковский перевод',
+            'наличные': 'Наличные',
+            'карта': 'Банковская карта',
+            'перевод': 'Банковский перевод'
+        };
+        
+        const lowerMethod = method.toLowerCase();
+        return methodMap[lowerMethod] || method;
     }
 
     async loadStatistics() {

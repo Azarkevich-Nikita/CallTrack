@@ -1,5 +1,6 @@
 package com.example.calltrack.Entity;
 
+import com.example.calltrack.Entity.Client;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,8 +20,9 @@ public class Payment {
     @Column(name = "payment_id")
     private Long id;
 
-    @Column(name = "client_id", nullable = false)
-    private Long clientId;
+    @ManyToOne
+    @JoinColumn(name = "client_id", nullable = false)
+    private Client client;
 
     @Column(nullable = false)
     private BigDecimal amount;

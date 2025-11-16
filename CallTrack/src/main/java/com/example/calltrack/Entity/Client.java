@@ -5,8 +5,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.LocalDate;
+import java.util.function.BiFunction;
 
 @Data
 @Builder
@@ -34,7 +37,7 @@ public class Client{
     private String password;
 
     @Column(name = "balance")
-    private Double balance;
+    private BigDecimal balance;
 
     @Column(name = "status")
     private String status;

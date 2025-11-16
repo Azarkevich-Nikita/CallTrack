@@ -4,9 +4,11 @@ import com.example.calltrack.DTO.PhoneNumberRequestDTO;
 import com.example.calltrack.Entity.Client;
 import com.example.calltrack.Entity.PhoneNumber;
 import com.example.calltrack.Repository.PhoneNumberRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -70,4 +72,23 @@ public class PhoneNumberService {
 
         return ResponseEntity.ok("Phone number registered successfully");
     }
+
+    @Transactional
+    public boolean updatePhoneNumberBalance(Long phone_id, BigDecimal amount) {
+        try {
+            PhoneNumber current_phone = phoneNumberRepository.findById(phone_id).orElseThrow();
+
+            current_phone.setNumberBalance(
+                    current_phone.getNumberBalance().add(amount)
+            );
+
+            phoneNumberRepository.save(current_phone);
+
+            return true;
+        }
+        catch (Exception e) {
+            return false;
+        }
+    }
+
 }
