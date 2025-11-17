@@ -1,120 +1,83 @@
 (() => {
-    const currencyFormatter = new Intl.NumberFormat('ru-RU', {
-        style: 'currency',
-        currency: 'RUB',
-        maximumFractionDigits: 2
+    const currencyFormatter = new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'RUB' });
+    const dateFormatter = new Intl.DateTimeFormat('ru-RU', { day: '2-digit', month: 'short' });
+    const dateTimeFormatter = new Intl.DateTimeFormat('ru-RU', {
+        day: '2-digit',
+        month: 'short',
+        hour: '2-digit',
+        minute: '2-digit'
     });
-    const shortDateFormatter = new Intl.DateTimeFormat('ru-RU', { day: '2-digit', month: 'short' });
-    const longDateFormatter = new Intl.DateTimeFormat('ru-RU', { day: '2-digit', month: 'long', year: 'numeric' });
 
     const tariffs = {
-        includedMinutes: 300,
-        creditMinutes: 60,
         localRate: 1.5,
         internationalRate: 12,
-        monthlyFee: 750
+        creditLimit: 60
     };
 
-    const callsData = [
-        { id: 1, msisdn: '+7 911 204-33-44', type: 'local', duration: 18, timestamp: '2025-02-17T09:35', cost: 27, note: 'В пределах лимита' },
-        { id: 2, msisdn: '+7 921 555-66-77', type: 'local', duration: 62, timestamp: '2025-02-17T11:10', cost: 93, note: 'Сверх лимита' },
-        { id: 3, msisdn: '+7 963 120-45-78', type: 'international', duration: 12, timestamp: '2025-02-16T21:18', cost: 144, note: 'Канада' },
-        { id: 4, msisdn: '+7 911 204-33-44', type: 'local', duration: 45, timestamp: '2025-02-15T08:12', cost: 67.5, note: 'Кредитные минуты' },
-        { id: 5, msisdn: '+7 999 243-77-11', type: 'international', duration: 6, timestamp: '2025-02-14T19:02', cost: 72, note: 'Испания' }
-    ];
-
-    const paymentsData = [
-        { id: 1, msisdn: '+7 911 204-33-44', amount: 1500, method: 'card', date: '2025-02-01', comment: 'Списание абонплаты' },
-        { id: 2, msisdn: '+7 921 555-66-77', amount: 600, method: 'transfer', date: '2025-02-10', comment: 'Пополнение баланса' },
-        { id: 3, msisdn: '+7 963 120-45-78', amount: 2100, method: 'card', date: '2025-02-12', comment: 'Оплата международных вызовов' }
-    ];
-
-    const debtorsData = [
-        { id: 1, msisdn: '+7 921 555-66-77', debt: 430, creditUsed: 45, limit: tariffs.creditMinutes, status: 'warning' },
-        { id: 2, msisdn: '+7 963 120-45-78', debt: 1180, creditUsed: 60, limit: tariffs.creditMinutes, status: 'critical' }
-    ];
-
-    const stockAssets = [
-        { name: 'Логотип', path: 'assets/images/logo-operator.svg' },
-        { name: 'Иконка звонков', path: 'assets/images/call.svg' },
-        { name: 'Иконка отчетов', path: 'assets/images/report.svg' },
-        { name: 'Иконка платежей', path: 'assets/images/payment.svg' },
-        { name: 'Иконка уведомлений', path: 'assets/images/notify.svg' }
-    ];
-
     const state = {
+        payments: [],
+        calls: [],
+        debtors: [],
+        activity: [],
         reportTab: 'calls',
-        page: 0,
-        pageSize: 6,
-        month: '2025-02',
-        assets: [...stockAssets]
+        month: getCurrentMonth()
     };
 
     const refs = {
-        overviewFees: document.getElementById('overviewFees'),
-        overviewOverLimit: document.getElementById('overviewOverLimit'),
+        tabs: document.querySelectorAll('#adminTabs .nav-link'),
+        panels: document.querySelectorAll('.panel'),
+        dashboardBtns: document.querySelectorAll('[data-panel-target]'),
+        overviewPayments: document.getElementById('overviewPayments'),
+        overviewCalls: document.getElementById('overviewCalls'),
         overviewInternational: document.getElementById('overviewInternational'),
-        overviewCreditClients: document.getElementById('overviewCreditClients'),
-        planIncludedMinutes: document.getElementById('planIncludedMinutes'),
-        creditLimit: document.getElementById('creditLimit'),
-        nextBillingDate: document.getElementById('nextBillingDate'),
+        overviewDebtors: document.getElementById('overviewDebtors'),
+        activityLog: document.getElementById('activityLog'),
         paymentForm: document.getElementById('paymentForm'),
+        paymentsTable: document.getElementById('paymentsTableBody'),
         callForm: document.getElementById('callForm'),
-        notifyDebtorsBtn: document.getElementById('notifyDebtorsBtn'),
-        tabs: document.querySelectorAll('.reports-tabs .tab'),
-        reportsHead: document.getElementById('reportsTableHead'),
-        reportsBody: document.getElementById('reportsTableBody'),
-        prevPage: document.getElementById('prevPage'),
-        nextPage: document.getElementById('nextPage'),
+        callsTable: document.getElementById('callsTableBody'),
+        debtorForm: document.getElementById('debtorForm'),
+        debtorsTable: document.getElementById('debtorsTableBody'),
+        alertForm: document.getElementById('alertForm'),
+        alertTarget: document.getElementById('alertTarget'),
+        reportTabs: document.querySelectorAll('.report-tab'),
+        reportsTableHead: document.getElementById('reportsTableHead'),
+        reportsTableBody: document.getElementById('reportsTableBody'),
         reportMonth: document.getElementById('reportMonth'),
         exportReport: document.getElementById('exportReport'),
-        toast: document.getElementById('adminToast'),
-        balanceAmount: document.getElementById('sidebarBalance'),
-        balanceRefresh: document.getElementById('balanceRefresh'),
-        uploadArea: document.getElementById('uploadArea'),
-        assetInput: document.getElementById('assetInput'),
-        selectAssetsBtn: document.getElementById('selectAssetsBtn'),
-        assetsList: document.getElementById('assetsList'),
-        downloadAllAssets: document.getElementById('downloadAllAssets'),
-        adminName: document.getElementById('adminName'),
-        adminInitials: document.getElementById('adminInitials'),
-        overviewGrid: document.getElementById('overviewGrid')
+        toast: document.getElementById('adminToast')
     };
 
     function init() {
-        fillInitialData();
+        initNavigation();
         bindForms();
-        bindReportControls();
-        bindAssets();
-        updateOverview();
-        renderReports();
-        renderAssets();
+        bindReports();
+        bindAlerts();
+        renderAll();
     }
 
-    function fillInitialData() {
-        refs.planIncludedMinutes.textContent = tariffs.includedMinutes;
-        refs.creditLimit.textContent = tariffs.creditMinutes;
-        refs.nextBillingDate.textContent = getNextMonthStart();
+    function initNavigation() {
+        refs.tabs.forEach((button) => {
+            button.addEventListener('click', () => {
+                showPanel(button.dataset.panel);
+            });
+        });
 
-        const storedAdmin = JSON.parse(localStorage.getItem('clientData') || '{}');
-        if (storedAdmin.fullName) {
-            refs.adminName.textContent = storedAdmin.fullName;
-            refs.adminInitials.textContent = getInitials(storedAdmin.fullName);
-        }
+        refs.dashboardBtns.forEach((btn) => {
+            btn.addEventListener('click', () => showPanel(btn.dataset.panelTarget));
+        });
 
-        if (refs.overviewGrid) {
-            refs.overviewGrid.setAttribute('aria-live', 'polite');
-        }
+        showPanel(document.querySelector('#adminTabs .nav-link.active')?.dataset.panel || 'dashboard');
     }
 
-    function getInitials(name) {
-        return name.split(' ').map((part) => part[0]).join('').slice(0, 2).toUpperCase();
-    }
-
-    function getNextMonthStart() {
-        const now = new Date();
-        const next = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-        return longDateFormatter.format(next);
+    function showPanel(panelName) {
+        const targetId = `panel-${panelName}`;
+        refs.tabs.forEach((tab) => {
+            tab.classList.toggle('active', tab.dataset.panel === panelName);
+        });
+        refs.panels.forEach((panel) => {
+            panel.classList.toggle('active', panel.id === targetId);
+        });
     }
 
     function bindForms() {
@@ -127,14 +90,14 @@
                 amount: Number(formData.get('amount')),
                 method: formData.get('method'),
                 date: formData.get('date'),
-                comment: 'Ручной ввод администратором'
+                comment: formData.get('comment') || '',
+                createdAt: new Date().toISOString()
             };
-
-            paymentsData.unshift(payment);
+            state.payments.unshift(payment);
+            addLogEntry('Платеж', `${payment.msisdn} · ${currencyFormatter.format(payment.amount)}`);
             refs.paymentForm.reset();
-            showToast('Платеж зарегистрирован');
-            updateOverview();
-            renderReports();
+            renderAll();
+            showToast('Платеж сохранен');
         });
 
         refs.callForm?.addEventListener('submit', (event) => {
@@ -153,289 +116,314 @@
                 duration,
                 timestamp: formData.get('timestamp'),
                 cost,
-                note: formData.get('note') || 'Ручной ввод'
+                note: formData.get('note') || '',
+                createdAt: new Date().toISOString()
             };
-
-            callsData.unshift(call);
+            state.calls.unshift(call);
+            addLogEntry('Звонок', `${call.msisdn} · ${type === 'international' ? 'Международный' : 'Местный'} · ${duration} мин`);
             refs.callForm.reset();
-            showToast('Звонок зарегистрирован');
-            updateOverview();
-            renderReports();
+            renderAll();
+            showToast('Звонок сохранен');
         });
 
-        refs.notifyDebtorsBtn?.addEventListener('click', () => {
-            showToast(`Отправлено уведомлений: ${debtorsData.length}`);
+        refs.debtorForm?.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const formData = new FormData(refs.debtorForm);
+            const debtor = {
+                id: Date.now(),
+                msisdn: formData.get('msisdn'),
+                debt: Number(formData.get('debt')),
+                creditUsed: Number(formData.get('creditUsed')),
+                status: formData.get('status') || 'warning'
+            };
+            state.debtors.unshift(debtor);
+            addLogEntry('Должник', `${debtor.msisdn} · задолженность ${currencyFormatter.format(debtor.debt)}`);
+            refs.debtorForm.reset();
+            renderAll();
+            showToast('Должник добавлен');
         });
     }
 
-    function bindReportControls() {
-        refs.tabs.forEach((tab) => {
-            tab.addEventListener('click', () => {
-                if (tab.classList.contains('active')) return;
-                refs.tabs.forEach((btn) => btn.classList.remove('active'));
-                tab.classList.add('active');
-                state.reportTab = tab.dataset.tab;
-                state.page = 0;
+    function bindReports() {
+        refs.reportTabs.forEach((button) => {
+            button.addEventListener('click', () => {
+                state.reportTab = button.dataset.report;
+                refs.reportTabs.forEach((tab) => tab.classList.toggle('active', tab === button));
                 renderReports();
             });
         });
 
-        refs.prevPage?.addEventListener('click', () => {
-            if (state.page > 0) {
-                state.page -= 1;
+        if (refs.reportMonth) {
+            refs.reportMonth.value = state.month;
+            refs.reportMonth.addEventListener('change', (event) => {
+                state.month = event.target.value;
                 renderReports();
-            }
-        });
-
-        refs.nextPage?.addEventListener('click', () => {
-            const total = getReportSource().length;
-            const maxPage = Math.ceil(total / state.pageSize) - 1;
-            if (state.page < maxPage) {
-                state.page += 1;
-                renderReports();
-            }
-        });
-
-        refs.reportMonth?.addEventListener('change', (event) => {
-            state.month = event.target.value;
-            renderReports();
-            updateOverview();
-        });
+            });
+        }
 
         refs.exportReport?.addEventListener('click', () => {
             const rows = getReportSource();
             if (!rows.length) {
-                showToast('Нет данных для экспорта');
+                showToast('Нет данных для экспорта', true);
                 return;
             }
             const csv = rowsToCsv(rows);
-            downloadBlob(csv, `calltrack-${state.reportTab}-${state.month}.csv`, 'text/csv');
-        });
-
-        refs.balanceRefresh?.addEventListener('click', () => {
-            if (!refs.balanceAmount) return;
-            refs.balanceRefresh.classList.add('spinning');
-            setTimeout(() => {
-                const random = 100000 + Math.random() * 50000;
-                refs.balanceAmount.textContent = currencyFormatter.format(random);
-                refs.balanceRefresh.classList.remove('spinning');
-            }, 600);
+            downloadCsv(csv, `report-${state.reportTab}-${state.month || 'all'}.csv`);
         });
     }
 
-    function bindAssets() {
-        refs.selectAssetsBtn?.addEventListener('click', () => {
-            refs.assetInput?.click();
-        });
-
-        refs.assetInput?.addEventListener('change', (event) => {
-            const files = Array.from(event.target.files || []);
-            files.forEach(addAssetFromFile);
-            event.target.value = '';
-        });
-
-        ['dragenter', 'dragover'].forEach((eventName) => {
-            refs.uploadArea?.addEventListener(eventName, (event) => {
-                event.preventDefault();
-                refs.uploadArea.classList.add('dragging');
-            });
-        });
-
-        ['dragleave', 'drop'].forEach((eventName) => {
-            refs.uploadArea?.addEventListener(eventName, (event) => {
-                event.preventDefault();
-                refs.uploadArea.classList.remove('dragging');
-            });
-        });
-
-        refs.uploadArea?.addEventListener('drop', (event) => {
-            const files = Array.from(event.dataTransfer?.files || []);
-            files.forEach(addAssetFromFile);
-        });
-
-        refs.downloadAllAssets?.addEventListener('click', () => {
-            state.assets.forEach(downloadAsset);
-            showToast('Иконки отправлены на загрузку');
+    function bindAlerts() {
+        refs.alertForm?.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const formData = new FormData(refs.alertForm);
+            const target = formData.get('target');
+            const type = formData.get('alertType');
+            const message = formData.get('message') || '';
+            const targetLabel = target === 'all'
+                ? 'всем должникам'
+                : state.debtors.find((debtor) => debtor.msisdn === target)?.msisdn || 'клиенту';
+            const typeLabel = mapAlertType(type);
+            addLogEntry('Уведомление', `${typeLabel} · ${targetLabel}`);
+            refs.alertForm.reset();
+            refs.alertTarget.value = 'all';
+            showToast('Уведомление отправлено');
         });
     }
 
-    function addAssetFromFile(file) {
-        if (!file.type.includes('image')) {
-            showToast(`Файл ${file.name} не является изображением`, true);
-            return;
-        }
-
-        const objectUrl = URL.createObjectURL(file);
-        state.assets.unshift({ name: file.name, path: objectUrl, dynamic: true, file });
-        renderAssets();
-        showToast(`Добавлен файл ${file.name}`);
+    function renderAll() {
+        updateOverview();
+        renderPaymentsTable();
+        renderCallsTable();
+        renderDebtorsTable();
+        renderReports();
+        updateAlertOptions();
+        renderLog();
     }
 
-    function downloadAsset(asset) {
-        const link = document.createElement('a');
-        link.href = asset.path;
-        link.download = asset.name.replace(/\s+/g, '-').toLowerCase();
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+    function updateOverview() {
+        const totalPayments = state.payments.reduce((sum, item) => sum + item.amount, 0);
+        const totalCalls = state.calls.length;
+        const internationalCost = state.calls
+            .filter((call) => call.type === 'international')
+            .reduce((sum, call) => sum + call.cost, 0);
+
+        refs.overviewPayments.textContent = currencyFormatter.format(totalPayments);
+        refs.overviewCalls.textContent = totalCalls.toString();
+        refs.overviewInternational.textContent = currencyFormatter.format(internationalCost);
+        refs.overviewDebtors.textContent = state.debtors.length.toString();
     }
 
-    function renderAssets() {
-        if (!refs.assetsList) return;
-        if (!state.assets.length) {
-            refs.assetsList.innerHTML = '<li>Нет доступных иконок</li>';
-            return;
-        }
-
-        refs.assetsList.innerHTML = state.assets.map((asset, index) => `
-            <li>
-                <span>${asset.name}</span>
-                <div class="asset-actions">
-                    <button type="button" data-action="preview" data-index="${index}">Просмотр</button>
-                    <button type="button" data-action="download" data-index="${index}">Скачать</button>
-                </div>
-            </li>
-        `).join('');
-
-        refs.assetsList.querySelectorAll('button').forEach((btn) => {
-            btn.addEventListener('click', () => {
-                const index = Number(btn.dataset.index);
-                const asset = state.assets[index];
-                if (!asset) return;
-                if (btn.dataset.action === 'preview') {
-                    window.open(asset.path, '_blank');
-                } else {
-                    downloadAsset(asset);
-                }
-            });
-        });
-    }
-
-    function getReportSource() {
-        const monthFilter = state.month;
-        const matchesMonth = (dateString) => dateString.startsWith(monthFilter);
-
-        if (state.reportTab === 'calls') {
-            return callsData.filter((row) => row.timestamp?.startsWith(monthFilter));
-        }
-        if (state.reportTab === 'payments') {
-            return paymentsData.filter((row) => row.date && matchesMonth(row.date));
-        }
-        return debtorsData;
-    }
-
-    function renderReports() {
-        if (!refs.reportsBody || !refs.reportsHead) return;
-
-        const source = getReportSource();
-        if (!source.length) {
-            refs.reportsHead.innerHTML = '';
-            refs.reportsBody.innerHTML = `
+    function renderPaymentsTable() {
+        if (!refs.paymentsTable) return;
+        if (!state.payments.length) {
+            refs.paymentsTable.innerHTML = `
                 <tr>
-                    <td class="table-placeholder">Нет данных за выбранный период</td>
+                    <td colspan="4" class="table-placeholder">Нет платежей</td>
+                </tr>
+            `;
+            return;
+        }
+        refs.paymentsTable.innerHTML = state.payments.slice(0, 6).map((payment) => `
+            <tr>
+                <td>${formatDate(payment.date)}</td>
+                <td>${payment.msisdn}</td>
+                <td>${mapMethod(payment.method)}</td>
+                <td>${currencyFormatter.format(payment.amount)}</td>
+            </tr>
+        `).join('');
+    }
+
+    function renderCallsTable() {
+        if (!refs.callsTable) return;
+        if (!state.calls.length) {
+            refs.callsTable.innerHTML = `
+                <tr>
+                    <td colspan="5" class="table-placeholder">Звонков пока нет</td>
                 </tr>
             `;
             return;
         }
 
-        const headers = getHeadersForTab(state.reportTab);
-        refs.reportsHead.innerHTML = `
+        refs.callsTable.innerHTML = state.calls.slice(0, 6).map((call) => `
+            <tr>
+                <td>${formatDateTime(call.timestamp)}</td>
+                <td>${call.msisdn}</td>
+                <td>${call.type === 'international' ? 'Международный' : 'Местный'}</td>
+                <td>${call.duration}</td>
+                <td>${currencyFormatter.format(call.cost)}</td>
+            </tr>
+        `).join('');
+    }
+
+    function renderDebtorsTable() {
+        if (!refs.debtorsTable) return;
+        if (!state.debtors.length) {
+            refs.debtorsTable.innerHTML = `
+                <tr>
+                    <td colspan="4" class="table-placeholder">Нет записей</td>
+                </tr>
+            `;
+            return;
+        }
+
+        refs.debtorsTable.innerHTML = state.debtors.map((debtor) => `
+            <tr>
+                <td>${debtor.msisdn}</td>
+                <td>${currencyFormatter.format(debtor.debt)}</td>
+                <td>${debtor.creditUsed} / ${tariffs.creditLimit}</td>
+                <td><span class="status-badge ${debtor.status === 'critical' ? 'critical' : 'warning'}">${mapDebtorStatus(debtor.status)}</span></td>
+            </tr>
+        `).join('');
+    }
+
+    function renderReports() {
+        if (!refs.reportsTableBody || !refs.reportsTableHead) return;
+        const source = getReportSource();
+        const headers = getHeadersForReport();
+
+        refs.reportsTableHead.innerHTML = `
             <tr>
                 ${headers.map((header) => `<th>${header}</th>`).join('')}
             </tr>
         `;
 
-        const start = state.page * state.pageSize;
-        const rows = source.slice(start, start + state.pageSize);
-        refs.reportsBody.innerHTML = rows.map((row) => formatRow(state.reportTab, row)).join('');
+        if (!source.length) {
+            refs.reportsTableBody.innerHTML = `
+                <tr>
+                    <td class="table-placeholder" colspan="${headers.length}">Нет данных за выбранный период</td>
+                </tr>
+            `;
+            return;
+        }
+
+        refs.reportsTableBody.innerHTML = source.map((row) => formatReportRow(row)).join('');
     }
 
-    function getHeadersForTab(tab) {
-        if (tab === 'calls') {
+    function getReportSource() {
+        if (state.reportTab === 'calls') {
+            return state.calls.filter((call) => matchesMonth(call.timestamp));
+        }
+        if (state.reportTab === 'payments') {
+            return state.payments.filter((payment) => matchesMonth(payment.date));
+        }
+        return state.debtors;
+    }
+
+    function getHeadersForReport() {
+        if (state.reportTab === 'calls') {
             return ['Дата/время', 'Номер', 'Тип', 'Минуты', 'Стоимость', 'Комментарий'];
         }
-        if (tab === 'payments') {
-            return ['Дата', 'Номер', 'Сумма', 'Метод', 'Комментарий'];
+        if (state.reportTab === 'payments') {
+            return ['Дата', 'Номер', 'Метод', 'Сумма', 'Комментарий'];
         }
-        return ['Номер', 'Задолженность', 'Использовано минут', 'Лимит', 'Статус'];
+        return ['Номер', 'Задолженность', 'Кредитные минуты', 'Статус'];
     }
 
-    function formatRow(tab, row) {
-        if (tab === 'calls') {
+    function formatReportRow(row) {
+        if (state.reportTab === 'calls') {
             return `
                 <tr>
                     <td>${formatDateTime(row.timestamp)}</td>
                     <td>${row.msisdn}</td>
-                    <td>${row.type === 'local' ? 'Местный' : 'Международный'}</td>
+                    <td>${row.type === 'international' ? 'Международный' : 'Местный'}</td>
                     <td>${row.duration}</td>
                     <td>${currencyFormatter.format(row.cost)}</td>
                     <td>${row.note || '—'}</td>
                 </tr>
             `;
         }
-
-        if (tab === 'payments') {
+        if (state.reportTab === 'payments') {
             return `
                 <tr>
                     <td>${formatDate(row.date)}</td>
                     <td>${row.msisdn}</td>
-                    <td>${currencyFormatter.format(row.amount)}</td>
                     <td>${mapMethod(row.method)}</td>
-                    <td>${row.comment}</td>
+                    <td>${currencyFormatter.format(row.amount)}</td>
+                    <td>${row.comment || '—'}</td>
                 </tr>
             `;
         }
-
         return `
             <tr>
                 <td>${row.msisdn}</td>
                 <td>${currencyFormatter.format(row.debt)}</td>
-                <td>${row.creditUsed} мин</td>
-                <td>${row.limit} мин</td>
-                <td>${row.status === 'critical' ? 'Критично' : 'Требует оплаты'}</td>
+                <td>${row.creditUsed} / ${tariffs.creditLimit}</td>
+                <td>${mapDebtorStatus(row.status)}</td>
             </tr>
         `;
     }
 
-    function mapMethod(code) {
-        switch (code) {
+    function updateAlertOptions() {
+        if (!refs.alertTarget) return;
+        const baseOption = '<option value="all">Все должники</option>';
+        if (!state.debtors.length) {
+            refs.alertTarget.innerHTML = baseOption;
+            return;
+        }
+        const options = state.debtors.map((debtor) => `<option value="${debtor.msisdn}">${debtor.msisdn}</option>`).join('');
+        refs.alertTarget.innerHTML = baseOption + options;
+    }
+
+    function renderLog() {
+        if (!refs.activityLog) return;
+        if (!state.activity.length) {
+            refs.activityLog.innerHTML = '<li class="log-empty">Нет записей — добавьте платеж или звонок.</li>';
+            return;
+        }
+
+        refs.activityLog.innerHTML = state.activity.slice(0, 6).map((entry) => `
+            <li class="log-item">
+                <span>${entry.title}</span>
+                <span>${dateFormatter.format(new Date(entry.timestamp))}</span>
+            </li>
+        `).join('');
+    }
+
+    function addLogEntry(title, details) {
+        state.activity.unshift({
+            title: `${title}: ${details}`,
+            timestamp: new Date().toISOString()
+        });
+    }
+
+    function matchesMonth(dateString) {
+        if (!state.month || !dateString) return true;
+        return dateString.slice(0, 7) === state.month;
+    }
+
+    function formatDate(dateString) {
+        if (!dateString) return '—';
+        return dateFormatter.format(new Date(dateString));
+    }
+
+    function formatDateTime(dateString) {
+        if (!dateString) return '—';
+        return dateTimeFormatter.format(new Date(dateString));
+    }
+
+    function mapMethod(method) {
+        switch (method) {
             case 'card': return 'Карта';
             case 'transfer': return 'Перевод';
             case 'cash': return 'Наличные';
-            default: return code;
+            default: return method;
         }
     }
 
-    function formatDate(date) {
-        return longDateFormatter.format(new Date(date));
+    function mapDebtorStatus(status) {
+        return status === 'critical' ? 'Критично' : 'Ожидание оплаты';
     }
 
-    function formatDateTime(dateTime) {
-        const date = new Date(dateTime);
-        return `${shortDateFormatter.format(date)} · ${date.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}`;
-    }
-
-    function updateOverview() {
-        const month = state.month;
-        const monthCalls = callsData.filter((call) => call.timestamp.startsWith(month));
-        const monthPayments = paymentsData.filter((payment) => payment.date.startsWith(month));
-        const overLimitMinutes = monthCalls
-            .filter((call) => call.type === 'local' && call.duration > 0)
-            .reduce((sum, call) => sum + Math.max(call.duration - 10, 0), 0);
-        const internationalCost = monthCalls
-            .filter((call) => call.type === 'international')
-            .reduce((sum, call) => sum + call.cost, 0);
-
-        const totalFees = monthPayments.reduce((sum, payment) => sum + payment.amount, 0);
-
-        refs.overviewFees.textContent = currencyFormatter.format(totalFees);
-        refs.overviewOverLimit.textContent = `${Math.round(overLimitMinutes)} мин`;
-        refs.overviewInternational.textContent = currencyFormatter.format(internationalCost);
-        refs.overviewCreditClients.textContent = debtorsData.length;
+    function mapAlertType(type) {
+        switch (type) {
+            case 'limit': return 'Кредитные минуты на исходе';
+            case 'block': return 'Блокировка исходящих';
+            default: return 'Напоминание';
+        }
     }
 
     function rowsToCsv(rows) {
-        const headers = getHeadersForTab(state.reportTab);
+        const headers = getHeadersForReport();
         const csvRows = rows.map((row) => {
             if (state.reportTab === 'calls') {
                 return [
@@ -451,25 +439,23 @@
                 return [
                     formatDate(row.date),
                     row.msisdn,
-                    row.amount,
                     row.method,
-                    row.comment
+                    row.amount,
+                    row.comment || ''
                 ];
             }
             return [
                 row.msisdn,
                 row.debt,
                 row.creditUsed,
-                row.limit,
                 row.status
             ];
         });
-
         return [headers, ...csvRows].map((line) => line.join(';')).join('\n');
     }
 
-    function downloadBlob(content, filename, type) {
-        const blob = new Blob([content], { type });
+    function downloadCsv(csv, filename) {
+        const blob = new Blob([csv], { type: 'text/csv' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
@@ -481,11 +467,14 @@
     function showToast(message, isError = false) {
         if (!refs.toast) return;
         refs.toast.textContent = message;
-        refs.toast.style.background = isError ? '#dc2626' : '#1f2937';
+        refs.toast.style.background = isError ? '#b91c1c' : '#0f172a';
         refs.toast.classList.add('show');
-        setTimeout(() => {
-            refs.toast?.classList.remove('show');
-        }, 2500);
+        setTimeout(() => refs.toast.classList.remove('show'), 2200);
+    }
+
+    function getCurrentMonth() {
+        const now = new Date();
+        return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
     }
 
     init();
