@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Панель администратора - CallTrack</title>
+    <link rel="stylesheet" href="styles/common.css">
+    <link rel="stylesheet" href="styles/admin.css">
+</head>
+<body class="admin-dashboard-body">
+    <div class="admin-layout">
+        <aside class="admin-sidebar">
+            <div class="sidebar-brand">
+                <div class="logo-mark">
+                    <span>CT</span>
+                </div>
+                <div>
+                    <div class="brand-title">CallTrack</div>
+                    <div class="brand-subtitle">Admin panel</div>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-link active">
+                    <span class="nav-icon" aria-hidden="true"></span>
+                    <span>Home</span>
+                </a>
+                <a href="#" class="nav-link">
+                    <span class="nav-icon chart" aria-hidden="true"></span>
+                    <span>Statistics</span>
+                </a>
+                <a href="#" class="nav-link">
+                    <span class="nav-icon tools" aria-hidden="true"></span>
+                    <span>Tools</span>
+                </a>
+                <a href="#" class="nav-link">
+                    <span class="nav-icon doc" aria-hidden="true"></span>
+                    <span>Documents</span>
+                </a>
+                <a href="#" class="nav-link">
+                    <span class="nav-icon partners" aria-hidden="true"></span>
+                    <span>For partners</span>
+                </a>
+                <a href="#" class="nav-link">
+                    <span class="nav-icon users" aria-hidden="true"></span>
+                    <span>Sub-users</span>
+                </a>
+                <a href="#" class="nav-link">
+                    <span class="nav-icon profile" aria-hidden="true"></span>
+                    <span>Profile</span>
+                </a>
+                <a href="#" class="nav-link">
+                    <span class="nav-icon support" aria-hidden="true"></span>
+                    <span>Support</span>
+                </a>
+            </nav>
+            <div class="sidebar-balance-card">
+                <div class="balance-amount" id="sidebarBalance">$127,429.65</div>
+                <div class="balance-caption">на сегодня, 12:03</div>
+                <button type="button" class="balance-refresh" id="balanceRefresh" aria-label="Обновить данные"></button>
+            </div>
+        </aside>
+
+        <main class="admin-main">
+            <header class="admin-topbar">
+                <div>
+                    <p class="topbar-label">Оператор связи · Панель администратора</p>
+                    <h1 class="section-title">Учет звонков и оплат</h1>
+                </div>
+                <div class="topbar-user">
+                    <span class="user-avatar" id="adminInitials">AD</span>
+                    <div>
+                        <span class="user-name" id="adminName">Администратор</span>
+                        <p class="user-role">Доступ: управление биллингом</p>
+                    </div>
+                </div>
+            </header>
+
+            <section class="overview-grid" id="overviewGrid">
+                <article class="overview-card">
+                    <p class="overview-label">Абонентская плата собрана</p>
+                    <h2 class="overview-value" id="overviewFees">0 ₽</h2>
+                    <p class="overview-subtitle">за текущий месяц</p>
+                </article>
+                <article class="overview-card accent">
+                    <p class="overview-label">Минуты сверх лимита</p>
+                    <h2 class="overview-value" id="overviewOverLimit">0 мин</h2>
+                    <p class="overview-subtitle">с учетом местных вызовов</p>
+                </article>
+                <article class="overview-card">
+                    <p class="overview-label">Международные переговоры</p>
+                    <h2 class="overview-value" id="overviewInternational">0 ₽</h2>
+                    <p class="overview-subtitle">не входят в абонплату</p>
+                </article>
+                <article class="overview-card warning">
+                    <p class="overview-label">Клиентов в кредите</p>
+                    <h2 class="overview-value" id="overviewCreditClients">0</h2>
+                    <p class="overview-subtitle">минут кредитного лимита</p>
+                </article>
+            </section>
+
+            <section class="admin-forms-grid">
+                <form class="admin-form" id="paymentForm">
+                    <div class="form-header">
+                        <h2>Регистрация поступления средств</h2>
+                        <p>Снятие абонплаты и пополнение баланса</p>
+                    </div>
+                    <label>
+                        <span>Номер клиента</span>
+                        <input type="text" name="msisdn" placeholder="+7 900 000-00-00" required>
+                    </label>
+                    <label>
+                        <span>Сумма платежа (₽)</span>
+                        <input type="number" name="amount" min="0" step="0.01" required>
+                    </label>
+                    <label>
+                        <span>Метод оплаты</span>
+                        <select name="method" required>
+                            <option value="">Выберите метод</option>
+                            <option value="card">Банковская карта</option>
+                            <option value="transfer">Банковский перевод</option>
+                            <option value="cash">Наличные</option>
+                        </select>
+                    </label>
+                    <label>
+                        <span>Дата зачисления</span>
+                        <input type="date" name="date" required>
+                    </label>
+                    <button type="submit" class="primary-btn">Зарегистрировать оплату</button>
+                </form>
+
+                <form class="admin-form" id="callForm">
+                    <div class="form-header">
+                        <h2>Регистрация звонка</h2>
+                        <p>Учет местных и международных минут</p>
+                    </div>
+                    <label>
+                        <span>Номер клиента</span>
+                        <input type="text" name="msisdn" placeholder="+7 900 000-00-00" required>
+                    </label>
+                    <div class="form-row">
+                        <label>
+                            <span>Тип вызова</span>
+                            <select name="type" required>
+                                <option value="local">Местный</option>
+                                <option value="international">Международный</option>
+                            </select>
+                        </label>
+                        <label>
+                            <span>Длительность (мин)</span>
+                            <input type="number" name="duration" min="0" step="0.1" required>
+                        </label>
+                    </div>
+                    <label>
+                        <span>Дата и время звонка</span>
+                        <input type="datetime-local" name="timestamp" required>
+                    </label>
+                    <label>
+                        <span>Комментарий</span>
+                        <textarea name="note" rows="3" placeholder="Например: кредитные минуты, VIP-клиент"></textarea>
+                    </label>
+                    <button type="submit" class="primary-btn">Добавить звонок</button>
+                </form>
+
+                <article class="admin-form notice-card">
+                    <div class="form-header">
+                        <h2>Кредитный лимит</h2>
+                        <p>Управление минутами при задолженности</p>
+                    </div>
+                    <p>В случае задолженности клиент получает кредит на ограниченное количество местных минут. После исчерпания лимита автоматическое списание блокируется.</p>
+                    <ul>
+                        <li><strong>Локальные минуты в абонентской плате:</strong> <span id="planIncludedMinutes">0</span> мин</li>
+                        <li><strong>Кредитный лимит:</strong> <span id="creditLimit">0</span> мин</li>
+                        <li><strong>Дата следующего списания:</strong> <span id="nextBillingDate">-</span></li>
+                    </ul>
+                    <button type="button" class="ghost-btn" id="notifyDebtorsBtn">Уведомить должников</button>
+                </article>
+            </section>
+
+            <section class="reports-card">
+                <div class="stats-card-header">
+                    <div>
+                        <p class="section-label">Отчеты</p>
+                        <h2 class="section-title">Контроль операций</h2>
+                    </div>
+                    <div class="header-actions">
+                        <select id="reportMonth">
+                            <option value="2025-02">Февраль 2025</option>
+                            <option value="2025-01">Январь 2025</option>
+                            <option value="2024-12">Декабрь 2024</option>
+                        </select>
+                        <button class="ghost-btn" id="exportReport">Экспорт</button>
+                    </div>
+                </div>
+
+                <div class="tabs reports-tabs">
+                    <button class="tab active" data-tab="calls">Звонки</button>
+                    <button class="tab" data-tab="payments">Платежи</button>
+                    <button class="tab" data-tab="debtors">Должники</button>
+                </div>
+
+                <div class="table-wrapper">
+                    <div class="table-scroll">
+                        <table class="stats-table">
+                            <thead id="reportsTableHead"></thead>
+                            <tbody id="reportsTableBody">
+                                <tr>
+                                    <td class="table-placeholder">Загрузка...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="reports-actions">
+                        <button type="button" class="ghost-btn" id="prevPage">Назад</button>
+                        <button type="button" class="ghost-btn" id="nextPage">Вперед</button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="assets-card">
+                <div class="stats-card-header">
+                    <div>
+                        <p class="section-label">Медиа</p>
+                        <h2 class="section-title">Иконки и изображения</h2>
+                    </div>
+                    <button class="ghost-btn" id="downloadAllAssets">Скачать все</button>
+                </div>
+                <div class="assets-grid">
+                    <div class="upload-area" id="uploadArea">
+                        <p>Перетащите сюда SVG/PNG или выберите файл</p>
+                        <input type="file" id="assetInput" accept="image/png,image/svg+xml" multiple>
+                        <button type="button" class="primary-btn small" id="selectAssetsBtn">Выбрать файлы</button>
+                    </div>
+                    <div class="assets-list">
+                        <h3>Доступные иконки</h3>
+                        <ul id="assetsList">
+                            <li>Загрузка списка...</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div class="toast" id="adminToast" role="status"></div>
+    <script src="scripts/admin.js"></script>
+</body>
+</html>
+

@@ -69,13 +69,12 @@ public class ClientService {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         else if(passwordEncoder.matches(clientRequestDTO.getPassword(), findingClient.getPassword())){
-            System.out.println(clientRequestDTO.getFullName());
             return ResponseEntity.ok(Client.builder()
                     .clientId(findingClient.getClientId())
                     .fullName(findingClient.getFullName())
                     .email(findingClient.getEmail())
-                    .balance(BigDecimal.ZERO)
-                    .status("USER")
+                    .balance(findingClient.getBalance())
+                    .status(findingClient.getStatus())
                     .build());
         }
         System.out.println("Wrong password");

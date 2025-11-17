@@ -66,6 +66,7 @@ public class PhoneNumberService {
                 .phone(phoneNumberRequestDTO.getPhone())
                 .isPrimary(isPrimary)
                 .client(client)
+                .numberBalance(BigDecimal.ZERO)
                 .numberName(phoneNumberRequestDTO.getNumberName())
                 .activatedAt(LocalDateTime.now())
                 .build());

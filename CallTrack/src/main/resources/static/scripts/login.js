@@ -139,9 +139,12 @@ class LoginManager {
                     if (response.client.email) {
                         localStorage.setItem('clientEmail', response.client.email);
                     }
+                    if (response.client.status) {
+                        localStorage.setItem('clientStatus', response.client.status);
+                    }
                 }
                 setTimeout(() => {
-                    window.location.href = 'dashboard.html';
+                    window.location.href = this.getRedirectTarget(response.client);
                 }, 1000);
             } else {
                 this.showError('submitBtn', response.message || 'Ошибка при входе');
@@ -315,6 +318,28 @@ class LoginManager {
         setTimeout(() => {
             successDiv.remove();
         }, 3000);
+    }
+
+    getRedirectTarget(client) {
+        if (!client) {
+            const storedStatus = (localStorage.getItem('clientStatus') || '').toString().trim().toUpperCase();
+            return storedStatus === 'ADMIN' ? 'admin.html' : 'dashboard.html';
+        }
+
+        const status = (
+            client.status ??
+            client.role ??
+            client.clientStatus ??
+            client.userRole ??
+            localStorage.getItem('clientStatus') ??
+            ''
+        ).toString().trim().toUpperCase();
+
+        if (status) {
+            localStorage.setItem('clientStatus', status);
+        }
+
+        return status === 'ADMIN' ? 'admin.html' : 'dashboard.html';
     }
 }
 

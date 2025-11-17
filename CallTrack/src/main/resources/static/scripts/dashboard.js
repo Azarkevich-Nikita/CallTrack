@@ -139,7 +139,7 @@ class DashboardManager {
                     clientId: this.clientData.clientId,
                     fullName: this.clientData.fullName,
                     email: this.clientData.email,
-                    balance: this.clientData.balance || 0,
+                    balance: this.clientData.balance || this.clientData.Balance || 0,
                     status: this.clientData.status
                 };
                 this.renderUserData();
@@ -165,7 +165,7 @@ class DashboardManager {
                         clientId: this.clientData.clientId,
                         fullName: this.clientData.fullName,
                         email: this.clientData.email,
-                        balance: this.clientData.balance || 0,
+                        balance: this.clientData.balance || this.clientData.Balance || 0,
                         status: this.clientData.status
                     };
                     this.renderUserData();
@@ -180,7 +180,7 @@ class DashboardManager {
                 clientId: clientData.clientId,
                 fullName: clientData.fullName,
                 email: clientData.email,
-                balance: clientData.balance || 0,
+                balance: clientData.balance || clientData.Balance || clientData.clientBalance || 0,
                 status: clientData.status
             };
             
@@ -194,7 +194,7 @@ class DashboardManager {
                     clientId: this.clientData.clientId,
                     fullName: this.clientData.fullName,
                     email: this.clientData.email,
-                    balance: this.clientData.balance || 0,
+                    balance: this.clientData.balance || this.clientData.Balance || this.clientData.clientBalance || 0,
                     status: this.clientData.status
                 };
                 this.renderUserData();
@@ -303,7 +303,7 @@ class DashboardManager {
                         </div>
                     </div>
                 </div>
-                <div class="phone-balance">${this.formatCurrency(phone.numberBalance || 0)}</div>
+                <div class="phone-balance">${this.formatCurrency(phone.numberBalance || phone.balance || phone.phoneBalance || 0)}</div>
                 <div class="phone-status ${(phone.status || 'active') === 'active' ? 'active' : 'inactive'}">
                     ${(phone.status || 'active') === 'active' ? 'Активен' : 'Неактивен'}
                 </div>
@@ -531,7 +531,7 @@ class DashboardManager {
         }
 
         if (this.phoneDetailsBalance) {
-            this.phoneDetailsBalance.textContent = this.formatCurrency(phone.balance || 0);
+            this.phoneDetailsBalance.textContent = this.formatCurrency(phone.numberBalance || phone.balance || phone.phoneBalance || 0);
         }
 
         if (this.phoneDetailsStatus) {
@@ -598,13 +598,24 @@ class DashboardManager {
             this.setModalFooter('Баланс успешно пополнен', 'success');
             this.phoneTopUpForm.reset();
 
-            const updatedBalance = (this.selectedPhone.balance || 0) + amountValue;
-            this.selectedPhone.balance = updatedBalance;
-            this.populatePhoneDetails(this.selectedPhone);
-            this.renderPhoneNumbers(this.phoneNumbers);
+            // Перезагружаем данные с сервера для получения актуальных балансов
+            await Promise.all([
+                this.loadPhoneNumbers(),
+                this.loadUserData(),
+                this.loadRecentTransactions(),
+                this.loadStatistics()
+            ]);
 
-            await this.loadRecentTransactions();
-            await this.loadStatistics();
+            // Обновляем модальное окно, если оно открыто
+            if (this.selectedPhone) {
+                const updatedPhone = this.phoneNumbers.find(p => 
+                    (p.__backendId || p.id || p.phoneId) === (this.selectedPhone.__backendId || this.selectedPhone.id || this.selectedPhone.phoneId)
+                );
+                if (updatedPhone) {
+                    this.selectedPhone = updatedPhone;
+                    this.populatePhoneDetails(updatedPhone);
+                }
+            }
         } catch (error) {
             console.error('Ошибка пополнения баланса:', error);
             this.setModalFooter(error.message || 'Не удалось выполнить пополнение', 'error');
@@ -738,7 +749,7 @@ class DashboardManager {
         }
 
         // Ограничиваем до 5 последних транзакций
-        const recentTransactions = transactions.slice(0, 5);
+        const recentTransactions = transactions.slice(0, 4);
 
         list.innerHTML = recentTransactions.map(transaction => {
             const amount = transaction.amount || 0;
