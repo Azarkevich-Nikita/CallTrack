@@ -1,4 +1,4 @@
-// Basic UI enhancements: smooth scroll to top on nav, focus search on load
+
 document.addEventListener('DOMContentLoaded', () => {
     const phoneInput = document.getElementById('phoneInput');
     if (phoneInput) {
@@ -14,7 +14,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Smooth anchor navigation
     document.querySelectorAll('a[href^="#"]').forEach(a => {
         a.addEventListener('click', e => {
             const id = a.getAttribute('href');
@@ -26,7 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // FAQ accordion
     document.querySelectorAll('.faq-item .faq-q').forEach(q => {
         q.addEventListener('click', () => {
             const item = q.closest('.faq-item');
@@ -34,7 +32,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Reveal on scroll
     const observer = new IntersectionObserver(entries => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -46,7 +43,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 });
 
-// Small helper to format phone if needed later
 export function normalizePhone(phone) {
     return (phone || '').replace(/[^\d+]/g, '').trim();
 }
