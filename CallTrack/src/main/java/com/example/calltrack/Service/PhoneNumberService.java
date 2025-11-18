@@ -92,4 +92,8 @@ public class PhoneNumberService {
         }
     }
 
+    public PhoneNumber getByPhone(String phone) {
+        return  phoneNumberRepository.findByPhone(phone).orElseThrow();
+    }
+
 }

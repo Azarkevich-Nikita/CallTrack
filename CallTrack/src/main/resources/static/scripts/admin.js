@@ -19,8 +19,7 @@
         calls: [],
         debtors: [],
         activity: [],
-        reportTab: 'calls',
-        month: getCurrentMonth()
+        reportTab: 'calls'
     };
 
     const refs = {
@@ -43,7 +42,6 @@
         reportTabs: document.querySelectorAll('.report-tab'),
         reportsTableHead: document.getElementById('reportsTableHead'),
         reportsTableBody: document.getElementById('reportsTableBody'),
-        reportMonth: document.getElementById('reportMonth'),
         exportReport: document.getElementById('exportReport'),
         toast: document.getElementById('adminToast')
     };
@@ -58,9 +56,7 @@
 
     function initNavigation() {
         refs.tabs.forEach((button) => {
-            button.addEventListener('click', () => {
-                showPanel(button.dataset.panel);
-            });
+            button.addEventListener('click', () => showPanel(button.dataset.panel));
         });
 
         refs.dashboardBtns.forEach((btn) => {
@@ -72,26 +68,21 @@
 
     function showPanel(panelName) {
         const targetId = `panel-${panelName}`;
-        refs.tabs.forEach((tab) => {
-            tab.classList.toggle('active', tab.dataset.panel === panelName);
-        });
-        refs.panels.forEach((panel) => {
-            panel.classList.toggle('active', panel.id === targetId);
-        });
+        refs.tabs.forEach((tab) => tab.classList.toggle('active', tab.dataset.panel === panelName));
+        refs.panels.forEach((panel) => panel.classList.toggle('active', panel.id === targetId));
     }
 
     function bindForms() {
         refs.paymentForm?.addEventListener('submit', (event) => {
             event.preventDefault();
-            const formData = new FormData(refs.paymentForm);
+            const fd = new FormData(refs.paymentForm);
             const payment = {
                 id: Date.now(),
-                msisdn: formData.get('msisdn'),
-                amount: Number(formData.get('amount')),
-                method: formData.get('method'),
-                date: formData.get('date'),
-                comment: formData.get('comment') || '',
-                createdAt: new Date().toISOString()
+                msisdn: fd.get('msisdn'),
+                amount: Number(fd.get('amount')),
+                method: fd.get('method'),
+                date: fd.get('date'),
+                comment: fd.get('comment') || ''
             };
             state.payments.unshift(payment);
             addLogEntry('Платеж', `${payment.msisdn} · ${currencyFormatter.format(payment.amount)}`);
@@ -102,22 +93,21 @@
 
         refs.callForm?.addEventListener('submit', (event) => {
             event.preventDefault();
-            const formData = new FormData(refs.callForm);
-            const type = formData.get('type');
-            const duration = Number(formData.get('duration'));
+            const fd = new FormData(refs.callForm);
+            const type = fd.get('type');
+            const duration = Number(fd.get('duration'));
             const cost = type === 'international'
                 ? duration * tariffs.internationalRate
                 : duration * tariffs.localRate;
 
             const call = {
                 id: Date.now(),
-                msisdn: formData.get('msisdn'),
+                msisdn: fd.get('msisdn'),
                 type,
                 duration,
-                timestamp: formData.get('timestamp'),
+                timestamp: fd.get('timestamp'),
                 cost,
-                note: formData.get('note') || '',
-                createdAt: new Date().toISOString()
+                note: fd.get('note') || ''
             };
             state.calls.unshift(call);
             addLogEntry('Звонок', `${call.msisdn} · ${type === 'international' ? 'Международный' : 'Местный'} · ${duration} мин`);
@@ -128,13 +118,13 @@
 
         refs.debtorForm?.addEventListener('submit', (event) => {
             event.preventDefault();
-            const formData = new FormData(refs.debtorForm);
+            const fd = new FormData(refs.debtorForm);
             const debtor = {
                 id: Date.now(),
-                msisdn: formData.get('msisdn'),
-                debt: Number(formData.get('debt')),
-                creditUsed: Number(formData.get('creditUsed')),
-                status: formData.get('status') || 'warning'
+                msisdn: fd.get('msisdn'),
+                debt: Number(fd.get('debt')),
+                creditUsed: Number(fd.get('creditUsed')),
+                status: fd.get('status') || 'warning'
             };
             state.debtors.unshift(debtor);
             addLogEntry('Должник', `${debtor.msisdn} · задолженность ${currencyFormatter.format(debtor.debt)}`);
@@ -153,36 +143,26 @@
             });
         });
 
-        if (refs.reportMonth) {
-            refs.reportMonth.value = state.month;
-            refs.reportMonth.addEventListener('change', (event) => {
-                state.month = event.target.value;
-                renderReports();
-            });
-        }
-
         refs.exportReport?.addEventListener('click', () => {
             const rows = getReportSource();
-            if (!rows.length) {
-                showToast('Нет данных для экспорта', true);
-                return;
-            }
+            if (!rows.length) return showToast('Нет данных для экспорта', true);
             const csv = rowsToCsv(rows);
-            downloadCsv(csv, `report-${state.reportTab}-${state.month || 'all'}.csv`);
+            downloadCsv(csv, `report-${state.reportTab}.csv`);
         });
     }
 
     function bindAlerts() {
         refs.alertForm?.addEventListener('submit', (event) => {
             event.preventDefault();
-            const formData = new FormData(refs.alertForm);
-            const target = formData.get('target');
-            const type = formData.get('alertType');
-            const message = formData.get('message') || '';
+            const fd = new FormData(refs.alertForm);
+            const target = fd.get('target');
+            const type = fd.get('alertType');
+            const message = fd.get('message') || '';
             const targetLabel = target === 'all'
                 ? 'всем должникам'
-                : state.debtors.find((debtor) => debtor.msisdn === target)?.msisdn || 'клиенту';
+                : state.debtors.find((d) => d.msisdn === target)?.msisdn || 'клиенту';
             const typeLabel = mapAlertType(type);
+
             addLogEntry('Уведомление', `${typeLabel} · ${targetLabel}`);
             refs.alertForm.reset();
             refs.alertTarget.value = 'all';
@@ -201,121 +181,83 @@
     }
 
     function updateOverview() {
-        const totalPayments = state.payments.reduce((sum, item) => sum + item.amount, 0);
+        const totalPayments = state.payments.reduce((s, i) => s + i.amount, 0);
         const totalCalls = state.calls.length;
-        const internationalCost = state.calls
-            .filter((call) => call.type === 'international')
-            .reduce((sum, call) => sum + call.cost, 0);
+        const internationalCost = state.calls.filter((c) => c.type === 'international').reduce((s, c) => s + c.cost, 0);
 
         refs.overviewPayments.textContent = currencyFormatter.format(totalPayments);
-        refs.overviewCalls.textContent = totalCalls.toString();
+        refs.overviewCalls.textContent = totalCalls;
         refs.overviewInternational.textContent = currencyFormatter.format(internationalCost);
-        refs.overviewDebtors.textContent = state.debtors.length.toString();
+        refs.overviewDebtors.textContent = state.debtors.length;
     }
 
     function renderPaymentsTable() {
-        if (!refs.paymentsTable) return;
         if (!state.payments.length) {
-            refs.paymentsTable.innerHTML = `
-                <tr>
-                    <td colspan="4" class="table-placeholder">Нет платежей</td>
-                </tr>
-            `;
+            refs.paymentsTable.innerHTML = `<tr><td colspan="4" class="table-placeholder">Нет платежей</td></tr>`;
             return;
         }
-        refs.paymentsTable.innerHTML = state.payments.slice(0, 6).map((payment) => `
+        refs.paymentsTable.innerHTML = state.payments.slice(0, 6).map((p) => `
             <tr>
-                <td>${formatDate(payment.date)}</td>
-                <td>${payment.msisdn}</td>
-                <td>${mapMethod(payment.method)}</td>
-                <td>${currencyFormatter.format(payment.amount)}</td>
+                <td>${formatDate(p.date)}</td>
+                <td>${p.msisdn}</td>
+                <td>${mapMethod(p.method)}</td>
+                <td>${currencyFormatter.format(p.amount)}</td>
             </tr>
         `).join('');
     }
 
     function renderCallsTable() {
-        if (!refs.callsTable) return;
         if (!state.calls.length) {
-            refs.callsTable.innerHTML = `
-                <tr>
-                    <td colspan="5" class="table-placeholder">Звонков пока нет</td>
-                </tr>
-            `;
+            refs.callsTable.innerHTML = `<tr><td colspan="5" class="table-placeholder">Звонков пока нет</td></tr>`;
             return;
         }
-
-        refs.callsTable.innerHTML = state.calls.slice(0, 6).map((call) => `
+        refs.callsTable.innerHTML = state.calls.slice(0, 6).map((c) => `
             <tr>
-                <td>${formatDateTime(call.timestamp)}</td>
-                <td>${call.msisdn}</td>
-                <td>${call.type === 'international' ? 'Международный' : 'Местный'}</td>
-                <td>${call.duration}</td>
-                <td>${currencyFormatter.format(call.cost)}</td>
+                <td>${formatDateTime(c.timestamp)}</td>
+                <td>${c.msisdn}</td>
+                <td>${c.type === 'international' ? 'Международный' : 'Местный'}</td>
+                <td>${c.duration}</td>
+                <td>${currencyFormatter.format(c.cost)}</td>
             </tr>
         `).join('');
     }
 
     function renderDebtorsTable() {
-        if (!refs.debtorsTable) return;
         if (!state.debtors.length) {
-            refs.debtorsTable.innerHTML = `
-                <tr>
-                    <td colspan="4" class="table-placeholder">Нет записей</td>
-                </tr>
-            `;
+            refs.debtorsTable.innerHTML = `<tr><td colspan="4" class="table-placeholder">Нет записей</td></tr>`;
             return;
         }
-
-        refs.debtorsTable.innerHTML = state.debtors.map((debtor) => `
+        refs.debtorsTable.innerHTML = state.debtors.map((d) => `
             <tr>
-                <td>${debtor.msisdn}</td>
-                <td>${currencyFormatter.format(debtor.debt)}</td>
-                <td>${debtor.creditUsed} / ${tariffs.creditLimit}</td>
-                <td><span class="status-badge ${debtor.status === 'critical' ? 'critical' : 'warning'}">${mapDebtorStatus(debtor.status)}</span></td>
+                <td>${d.msisdn}</td>
+                <td>${currencyFormatter.format(d.debt)}</td>
+                <td>${d.creditUsed} / ${tariffs.creditLimit}</td>
+                <td><span class="status-badge ${d.status === 'critical' ? 'critical' : 'warning'}">${mapDebtorStatus(d.status)}</span></td>
             </tr>
         `).join('');
     }
 
     function renderReports() {
-        if (!refs.reportsTableBody || !refs.reportsTableHead) return;
         const source = getReportSource();
         const headers = getHeadersForReport();
-
-        refs.reportsTableHead.innerHTML = `
-            <tr>
-                ${headers.map((header) => `<th>${header}</th>`).join('')}
-            </tr>
-        `;
+        refs.reportsTableHead.innerHTML = `<tr>${headers.map((h) => `<th>${h}</th>`).join('')}</tr>`;
 
         if (!source.length) {
-            refs.reportsTableBody.innerHTML = `
-                <tr>
-                    <td class="table-placeholder" colspan="${headers.length}">Нет данных за выбранный период</td>
-                </tr>
-            `;
+            refs.reportsTableBody.innerHTML = `<tr><td colspan="${headers.length}" class="table-placeholder">Нет данных</td></tr>`;
             return;
         }
-
         refs.reportsTableBody.innerHTML = source.map((row) => formatReportRow(row)).join('');
     }
 
     function getReportSource() {
-        if (state.reportTab === 'calls') {
-            return state.calls.filter((call) => matchesMonth(call.timestamp));
-        }
-        if (state.reportTab === 'payments') {
-            return state.payments.filter((payment) => matchesMonth(payment.date));
-        }
+        if (state.reportTab === 'calls') return state.calls;
+        if (state.reportTab === 'payments') return state.payments;
         return state.debtors;
     }
 
     function getHeadersForReport() {
-        if (state.reportTab === 'calls') {
-            return ['Дата/время', 'Номер', 'Тип', 'Минуты', 'Стоимость', 'Комментарий'];
-        }
-        if (state.reportTab === 'payments') {
-            return ['Дата', 'Номер', 'Метод', 'Сумма', 'Комментарий'];
-        }
+        if (state.reportTab === 'calls') return ['Дата/время', 'Номер', 'Тип', 'Минуты', 'Стоимость', 'Комментарий'];
+        if (state.reportTab === 'payments') return ['Дата', 'Номер', 'Метод', 'Сумма', 'Комментарий'];
         return ['Номер', 'Задолженность', 'Кредитные минуты', 'Статус'];
     }
 
@@ -354,27 +296,19 @@
     }
 
     function updateAlertOptions() {
-        if (!refs.alertTarget) return;
-        const baseOption = '<option value="all">Все должники</option>';
-        if (!state.debtors.length) {
-            refs.alertTarget.innerHTML = baseOption;
-            return;
-        }
-        const options = state.debtors.map((debtor) => `<option value="${debtor.msisdn}">${debtor.msisdn}</option>`).join('');
-        refs.alertTarget.innerHTML = baseOption + options;
+        const base = '<option value="all">Все должники</option>';
+        refs.alertTarget.innerHTML = base + state.debtors.map((d) => `<option value="${d.msisdn}">${d.msisdn}</option>`).join('');
     }
 
     function renderLog() {
-        if (!refs.activityLog) return;
         if (!state.activity.length) {
             refs.activityLog.innerHTML = '<li class="log-empty">Нет записей — добавьте платеж или звонок.</li>';
             return;
         }
-
-        refs.activityLog.innerHTML = state.activity.slice(0, 6).map((entry) => `
+        refs.activityLog.innerHTML = state.activity.slice(0, 6).map((e) => `
             <li class="log-item">
-                <span>${entry.title}</span>
-                <span>${dateFormatter.format(new Date(entry.timestamp))}</span>
+                <span>${e.title}</span>
+                <span>${dateFormatter.format(new Date(e.timestamp))}</span>
             </li>
         `).join('');
     }
@@ -384,11 +318,6 @@
             title: `${title}: ${details}`,
             timestamp: new Date().toISOString()
         });
-    }
-
-    function matchesMonth(dateString) {
-        if (!state.month || !dateString) return true;
-        return dateString.slice(0, 7) === state.month;
     }
 
     function formatDate(dateString) {
@@ -465,16 +394,10 @@
     }
 
     function showToast(message, isError = false) {
-        if (!refs.toast) return;
         refs.toast.textContent = message;
         refs.toast.style.background = isError ? '#b91c1c' : '#0f172a';
         refs.toast.classList.add('show');
         setTimeout(() => refs.toast.classList.remove('show'), 2200);
-    }
-
-    function getCurrentMonth() {
-        const now = new Date();
-        return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
     }
 
     init();

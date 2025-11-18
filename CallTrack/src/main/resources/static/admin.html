@@ -19,7 +19,6 @@
             </div>
             <nav class="sidebar-nav" id="adminTabs" aria-label="Разделы панели">
                 <button type="button" class="nav-link active" data-panel="dashboard">Рабочий стол</button>
-                <button type="button" class="nav-link" data-panel="payments">Платежи</button>
                 <button type="button" class="nav-link" data-panel="calls">Звонки</button>
                 <button type="button" class="nav-link" data-panel="reports">Отчеты</button>
                 <button type="button" class="nav-link" data-panel="debtors">Должники</button>
@@ -68,78 +67,12 @@
                             <p class="panel-label">Журнал</p>
                             <h2>Последние события</h2>
                         </div>
-                        <button type="button" class="ghost-btn" data-panel-target="payments">Добавить платеж</button>
+                        <button type="button" class="ghost-btn" data-panel-target="calls">Добавить звонок</button>
                     </div>
                     <ul class="log-list" id="activityLog">
-                        <li class="log-empty">Нет записей — добавьте платеж или звонок.</li>
+                        <li class="log-empty">Нет записей — добавьте звонок.</li>
                     </ul>
                 </article>
-            </section>
-
-            <section class="panel" id="panel-payments" aria-label="Платежи">
-                <div class="panel-split">
-                    <article class="panel-card">
-                        <div class="panel-header">
-                            <div>
-                                <p class="panel-label">Биллинг</p>
-                                <h2>Регистрация поступления</h2>
-                            </div>
-                        </div>
-                        <form class="admin-form" id="paymentForm">
-                            <label>
-                                <span>Номер клиента</span>
-                                <input type="text" name="msisdn" placeholder="+7 900 000-00-00" required>
-                            </label>
-                            <label>
-                                <span>Сумма платежа (₽)</span>
-                                <input type="number" name="amount" min="0" step="0.01" required>
-                            </label>
-                            <label>
-                                <span>Метод оплаты</span>
-                                <select name="method" required>
-                                    <option value="">Выберите метод</option>
-                                    <option value="card">Банковская карта</option>
-                                    <option value="transfer">Банковский перевод</option>
-                                    <option value="cash">Наличные</option>
-                                </select>
-                            </label>
-                            <label>
-                                <span>Дата зачисления</span>
-                                <input type="date" name="date" required>
-                            </label>
-                            <label>
-                                <span>Комментарий</span>
-                                <textarea name="comment" rows="3" placeholder="Например: оплата международных минут"></textarea>
-                            </label>
-                            <button type="submit" class="primary-btn">Сохранить платеж</button>
-                        </form>
-                    </article>
-                    <article class="panel-card">
-                        <div class="panel-header">
-                            <div>
-                                <p class="panel-label">Журнал оплат</p>
-                                <h2>Последние платежи</h2>
-                            </div>
-                        </div>
-                        <div class="table-wrapper">
-                            <table class="styled-table">
-                                <thead>
-                                    <tr>
-                                        <th>Дата</th>
-                                        <th>Номер</th>
-                                        <th>Метод</th>
-                                        <th>Сумма</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="paymentsTableBody">
-                                    <tr>
-                                        <td colspan="4" class="table-placeholder">Нет платежей</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </article>
-                </div>
             </section>
 
             <section class="panel" id="panel-calls" aria-label="Звонки">
@@ -340,5 +273,3 @@
     <script src="scripts/admin.js"></script>
 </body>
 </html>
-
-

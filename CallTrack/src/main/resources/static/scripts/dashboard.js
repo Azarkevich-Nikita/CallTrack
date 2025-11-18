@@ -1,8 +1,3 @@
-/**
- * Скрипт для страницы личного кабинета
- * Загружает данные пользователя, номера телефонов, последние операции и статистику
- */
-
 class DashboardManager {
     constructor() {
         this.clientId = localStorage.getItem('clientId');

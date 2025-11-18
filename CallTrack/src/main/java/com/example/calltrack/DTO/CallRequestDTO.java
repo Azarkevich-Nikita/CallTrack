@@ -6,18 +6,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ClientRequestDTO {
-    private String fullName;
-
-    private LocalDateTime birthDate;
-
-    private String email;
-
-    private String password;
+public class CallRequestDTO {
+    String phoneNumber;
+    String callType;
+    Integer durationMinutes;
+    LocalDate startDate;
+    String comment;
 }
