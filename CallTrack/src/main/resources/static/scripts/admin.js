@@ -61,19 +61,20 @@
     }
 
     function addCallRow(call) {
-        const placeholder = callsTable.querySelector(".table-placeholder");
-        if (placeholder) placeholder.parentElement.remove();
-
+        const tableBody = document.getElementById("callsTableBody");
+    
         const tr = document.createElement("tr");
         tr.innerHTML = `
-            <td>${call.timestamp}</td>
-            <td>${call.msisdn}</td>
-            <td>${call.type}</td>
-            <td>${call.duration}</td>
+            <td>${call.startedAt ?? "-"}</td>
+            <td>${call.phoneNumber.phone ?? "-"}</td>
+            <td>${call.callType ?? call.type ?? "-"}</td>
+            <td>${call.durationMinutes ?? "-"}</td>
             <td>${call.cost ?? "-"}</td>
         `;
-        callsTable.prepend(tr);
+    
+        tableBody.prepend(tr);
     }
+    
 
     const debtorForm = document.getElementById("debtorForm");
     const debtorsTable = document.getElementById("debtorsTableBody");
@@ -181,5 +182,32 @@
         document.getElementById("overviewDebtors").textContent = debtors;
     }
 
+    async function loadCalls() {
+        try {
+            const res = await fetch("/api/v1/calls");
+            if (!res.ok) throw new Error("Ошибка загрузки звонков");
+
+            const data = await res.json();
+            const tableBody = document.getElementById("callsTableBody");
+
+            tableBody.innerHTML = "";
+
+            if (!data.length) {
+                tableBody.innerHTML = `
+                    <tr><td colspan="5" class="table-placeholder">Звонков нет</td></tr>
+                `;
+                return;
+            }
+
+            data.forEach(call => addCallRow(call));
+
+            updateOverview();
+
+        } catch (err) {
+            console.error("Ошибка загрузки:", err);
+        }
+    }
+
+    loadCalls();
     updateOverview();
 });
