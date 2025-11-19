@@ -46,7 +46,7 @@ public class ClientService {
 
         Client client = Client.builder()
                 .fullName(clientDTO.getFullName())
-                .birthDate(clientDTO.getBirthDate())
+                .birthDate(clientDTO.getBirthDate().toLocalDate())
                 .email(clientDTO.getEmail())
                 .password(passwordEncoder.encode(clientDTO.getPassword()))
                 .balance(BigDecimal.ZERO)

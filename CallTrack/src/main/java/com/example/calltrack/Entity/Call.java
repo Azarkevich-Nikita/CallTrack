@@ -19,25 +19,25 @@ public class Call {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "call_id")
-    private Long calltId;
+    private Long callId;
 
     @ManyToOne
     @JoinColumn(name = "number_id", nullable = false)
     private PhoneNumber phoneNumber;
 
-    @Column(name = "started_at", nullable = false)
+    @Column(name = "started_at")
     private LocalDateTime startedAt;
 
-    @Column(name = "call_type", nullable = false)
+    @Column(name = "call_type")
     private String callType;
 
     @ManyToOne
-    @JoinColumn(name = "tariff_id", nullable = false)
+    @JoinColumn(name = "tariff_id")
     private Tarif tarif;
 
-    @Column(name = "cost", nullable = false)
+    @Column(name = "cost")
     private BigDecimal cost;
 
-    @Column(name = "duration_minutes", nullable = false)
+    @Column(name = "duration_minutes")
     private Integer durationMinutes;
 }

@@ -1,6 +1,5 @@
 package com.example.calltrack.Entity;
 
-import com.example.calltrack.Entity.Client;
 import jakarta.persistence.*;
 import lombok.*;
 

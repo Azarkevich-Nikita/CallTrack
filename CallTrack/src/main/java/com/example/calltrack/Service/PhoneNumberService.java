@@ -3,6 +3,7 @@ package com.example.calltrack.Service;
 import com.example.calltrack.DTO.PhoneNumberRequestDTO;
 import com.example.calltrack.Entity.Client;
 import com.example.calltrack.Entity.PhoneNumber;
+import com.example.calltrack.Entity.Tarif;
 import com.example.calltrack.Repository.PhoneNumberRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.http.ResponseEntity;
@@ -94,6 +95,10 @@ public class PhoneNumberService {
 
     public PhoneNumber getByPhone(String phone) {
         return  phoneNumberRepository.findByPhone(phone).orElseThrow();
+    }
+
+    public Tarif getTarifByNumber(String number) {
+        return phoneNumberRepository.findByPhone(number).get().getTarif();
     }
 
 }

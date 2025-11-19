@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.List;
 
@@ -32,10 +33,12 @@ public class CallService {
                     .phoneNumber(phoneNumberService.getByPhone(call.getPhoneNumber()))
                     .startedAt(call.getStartDate().atStartOfDay())
                     .callType(call.getCallType())
-                    //.tarif("None")
-                    //.cost()
+                    .tarif(phoneNumberService.getTarifByNumber(call.getPhoneNumber()))
+                    .cost(phoneNumberService.getTarifByNumber(call.getPhoneNumber()).getPricePerMinute()
+                            .multiply(BigDecimal.valueOf(call.getDurationMinutes())))
                     .durationMinutes(call.getDurationMinutes())
                     .build();
+            callRepository.save(currentCall);
             return  new ResponseEntity<>(currentCall, HttpStatus.CREATED);
 
         }

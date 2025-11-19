@@ -40,4 +40,8 @@ public class PhoneNumber {
 
     @Column(name = "number_balance")
     private BigDecimal numberBalance;
+
+    @ManyToOne
+    @JoinColumn(name = "tarif_id")
+    private Tarif tarif;
 }

@@ -1,18 +1,21 @@
 package com.example.calltrack.Entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Entity
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
 @Table(name = "tariff")
 public class Tarif {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "tariff_id")
     private Long tariffId;
 
@@ -23,7 +26,7 @@ public class Tarif {
     private String tariffType;
 
     @Column(name = "price_per_minute")
-    private Double pricePerMinute;
+    private BigDecimal pricePerMinute;
 
     @Column(name = "currency")
     private String currency;
