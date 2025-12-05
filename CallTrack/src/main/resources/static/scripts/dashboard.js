@@ -743,8 +743,13 @@ class DashboardManager {
             return;
         }
 
-        // Ограничиваем до 5 последних транзакций
         const recentTransactions = transactions.slice(0, 4);
+
+        const availableFunds = document.getElementById('availableFunds');
+        if (availableFunds) {
+            const balance = recentTransactions[0].balanceAfter || 0;
+            availableFunds.textContent = this.formatCurrency(balance);
+        }
 
         list.innerHTML = recentTransactions.map(transaction => {
             const amount = transaction.amount || 0;

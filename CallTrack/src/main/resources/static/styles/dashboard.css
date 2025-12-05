@@ -15,9 +15,9 @@
 .main-account-card {
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: 14px;
+    border-radius: 12px;
     padding: 24px;
-    box-shadow: var(--shadow);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .account-header {
@@ -52,7 +52,7 @@
 .btn-action {
     padding: 10px 16px;
     border: 1px solid var(--border);
-    border-radius: 10px;
+    border-radius: 8px;
     cursor: pointer;
     font-size: 14px;
     transition: all 0.2s ease;
@@ -69,7 +69,7 @@
 .btn-action.btn-primary:hover {
     background: var(--brand-600);
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(42, 125, 225, 0.3);
+    box-shadow: 0 4px 12px rgba(42, 125, 225, 0.25);
 }
 
 .btn-action.btn-secondary {
@@ -101,9 +101,9 @@
 
 .standing-orders-card {
     background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
-    border-radius: 14px;
+    border-radius: 12px;
     padding: 24px;
-    box-shadow: var(--shadow);
+    box-shadow: 0 4px 16px rgba(15, 118, 110, 0.2);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -132,6 +132,7 @@
     font-size: 20px;
     margin: 0 0 12px 0;
     color: white;
+    font-weight: 600;
 }
 
 .standing-orders-card p {
@@ -146,7 +147,7 @@
     color: #0f766e;
     border: none;
     padding: 10px 20px;
-    border-radius: 10px;
+    border-radius: 8px;
     cursor: pointer;
     font-size: 14px;
     font-weight: 600;
@@ -162,7 +163,7 @@
     position: absolute;
     bottom: 20px;
     right: 20px;
-    opacity: 0.3;
+    opacity: 0.2;
     z-index: 0;
 }
 
@@ -204,7 +205,7 @@
 
 .phone-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     border-color: var(--brand);
 }
 
@@ -374,7 +375,7 @@
     align-items: center;
     justify-content: center;
     padding: 24px;
-    backdrop-filter: blur(6px);
+    backdrop-filter: blur(4px);
     z-index: 1000;
 }
 
@@ -383,7 +384,7 @@
     width: min(520px, 100%);
     background: var(--card);
     border-radius: 16px;
-    box-shadow: 0 20px 50px rgba(15, 23, 42, 0.25);
+    box-shadow: 0 20px 50px rgba(15, 23, 42, 0.2);
     padding: 28px;
     border: 1px solid rgba(148, 163, 184, 0.2);
     display: flex;
@@ -418,18 +419,25 @@
 .modal-icon {
     width: 48px;
     height: 48px;
-    border-radius: 14px;
+    border-radius: 12px;
     background: linear-gradient(135deg, #dbeafe, #e0f2fe);
     display: flex;
     align-items: center;
     justify-content: center;
     color: #1d4ed8;
+    flex-shrink: 0;
+}
+
+.modal-icon svg {
+    width: 24px;
+    height: 24px;
 }
 
 .modal-title {
     margin: 0;
     font-size: 22px;
     color: var(--text);
+    font-weight: 600;
 }
 
 .modal-subtitle {
@@ -453,7 +461,7 @@
 .info-block {
     background: #f8fafc;
     border: 1px solid rgba(191, 219, 254, 0.6);
-    border-radius: 12px;
+    border-radius: 10px;
     padding: 16px;
     display: flex;
     flex-direction: column;
@@ -511,7 +519,7 @@
 .topup-form .form-select {
     padding: 12px 14px;
     border: 1px solid var(--border);
-    border-radius: 10px;
+    border-radius: 8px;
     font-size: 14px;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
@@ -520,7 +528,7 @@
 .topup-form .form-select:focus {
     outline: none;
     border-color: var(--brand);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
 }
 
 .topup-form .input-hint {
@@ -561,9 +569,9 @@
 .statistics-card {
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: 14px;
+    border-radius: 12px;
     padding: 24px;
-    box-shadow: var(--shadow);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .card-header {
@@ -807,6 +815,7 @@
 @media (max-width: 768px) {
     .dashboard-container {
         padding: 0 16px;
+        margin: 16px auto;
     }
 
     .account-actions {

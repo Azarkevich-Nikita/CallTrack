@@ -24,16 +24,13 @@ class RegistrationManager {
     }
 
     setupEventListeners() {
-        // Отправка формы
         this.form.addEventListener('submit', (e) => this.handleSubmit(e));
 
-        // Google OAuth
         const googleAuthBtn = document.getElementById('googleAuthBtn');
         if (googleAuthBtn) {
             googleAuthBtn.addEventListener('click', () => this.handleGoogleAuth());
         }
 
-        // Валидация в реальном времени
         this.fullNameInput.addEventListener('input', () => this.validateFullName());
         this.emailInput.addEventListener('input', () => this.validateEmail());
         this.passwordInput.addEventListener('input', () => this.validatePassword());

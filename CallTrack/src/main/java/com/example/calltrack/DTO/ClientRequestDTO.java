@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Builder
 @Data
@@ -15,7 +14,7 @@ import java.time.LocalDateTime;
 public class ClientRequestDTO {
     private String fullName;
 
-    private LocalDateTime birthDate;
+    private LocalDate birthDate;
 
     private String email;
 

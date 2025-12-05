@@ -38,15 +38,14 @@ public class ClientService {
     }
 
     public ResponseEntity<String> addNewClient(ClientRequestDTO clientDTO) {
-        if (getClientByEmail(clientDTO.getEmail()) != null) {
+        if (getClientByEmail(clientDTO.getEmail()) != null)
             return ResponseEntity
                     .status(HttpStatus.CONFLICT)
                     .body("Client already exists");
-        }
 
         Client client = Client.builder()
                 .fullName(clientDTO.getFullName())
-                .birthDate(clientDTO.getBirthDate().toLocalDate())
+                .birthDate(clientDTO.getBirthDate())
                 .email(clientDTO.getEmail())
                 .password(passwordEncoder.encode(clientDTO.getPassword()))
                 .balance(BigDecimal.ZERO)
