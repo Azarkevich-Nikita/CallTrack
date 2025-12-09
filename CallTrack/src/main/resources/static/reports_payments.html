@@ -3,108 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Отчеты по оплатам</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .container {
-            background: #ffffff;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            width: 90%;
-            max-width: 800px;
-            text-align: center;
-        }
-        h1 {
-            color: #2c3e50;
-            font-size: 28px;
-            margin-bottom: 20px;
-        }
-        .filter-section {
-            margin-bottom: 20px;
-            text-align: left;
-        }
-        .filter-section label {
-            color: #34495e;
-            font-weight: 500;
-            margin-right: 10px;
-        }
-        .filter-section input {
-            padding: 8px;
-            border: 2px solid #ecf0f1;
-            border-radius: 5px;
-            font-size: 14px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            padding: 12px;
-            border: 1px solid #ddd;
-            text-align: left;
-        }
-        th {
-            background-color: #3498db;
-            color: #fff;
-        }
-        tr:nth-child(even) {
-            background-color: #f8f9fa;
-        }
-        .back-link {
-            display: block;
-            margin-top: 20px;
-            color: #7f8c8d;
-            text-decoration: none;
-            font-size: 14px;
-        }
-        .back-link:hover {
-            color: #3498db;
-        }
-    </style>
+    <title>Отчеты по оплатам - CallTrack</title>
+    
+    <link rel="stylesheet" href="styles/common.css">
+    <link rel="stylesheet" href="styles/reports.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Отчеты по оплатам</h1>
-        <div class="filter-section">
-            <label for="dateFrom">С:</label>
-            <input type="date" id="dateFrom" value="2025-09-01">
-            <label for="dateTo">По:</label>
-            <input type="date" id="dateTo" value="2025-09-30">
-            <label for="phoneFilter">Номер клиента:</label>
-            <input type="text" id="phoneFilter" placeholder="Введите номер (опционально)">
+    <header class="site-header">
+        <nav class="nav">
+            <div class="left">
+                <img src="assets/images/logo-operator.svg" alt="Logo">
+                <span class="brand-name">CallTrack</span>
+            </div>
+            <div class="right">
+                <a href="index.html">Главная</a>
+                <a href="dashboard.html">Личный кабинет</a>
+                <a href="#" id="logoutBtn" data-auth="user" data-role="logout-link">Выйти</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="reports-container">
+        <div class="reports-header">
+            <h1 class="reports-title">Отчеты по оплатам</h1>
+            <p class="reports-subtitle">Просмотр всех операций по пополнению и списанию средств</p>
+            <a href="dashboard.html" class="back-link">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: inline-block; vertical-align: middle; margin-right: 4px;">
+                    <path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Назад в личный кабинет
+            </a>
         </div>
-        <table>
-            <tr>
-                <th>Номер клиента</th>
-                <th>Дата платежа</th>
-                <th>Сумма (руб)</th>
-                <th>Тип платежа</th>
-            </tr>
-            <tr>
-                <td>+7 (999) 123-45-67</td>
-                <td>30.09.2025</td>
-                <td>500.00</td>
-                <td>Карта</td>
-            </tr>
-            <tr>
-                <td>+7 (999) 123-45-68</td>
-                <td>29.09.2025</td>
-                <td>300.00</td>
-                <td>Наличные</td>
-            </tr>
-        </table>
-        <a href="index.html" class="back-link">← Назад к главному меню</a>
-    </div>
+
+        <div class="filters-card">
+            <h3 class="filters-title">Фильтры</h3>
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label for="dateFrom" class="filter-label">Дата с</label>
+                    <input type="date" id="dateFrom" class="filter-input" />
+                </div>
+                <div class="filter-group">
+                    <label for="dateTo" class="filter-label">Дата по</label>
+                    <input type="date" id="dateTo" class="filter-input" />
+                </div>
+                <div class="filter-group">
+                    <label for="phoneFilter" class="filter-label">Номер телефона</label>
+                    <input type="text" id="phoneFilter" class="filter-input" placeholder="Введите номер (опционально)" />
+                </div>
+            </div>
+            <div class="filter-actions">
+                <button type="button" class="btn-filter btn-primary" id="applyFilters">
+                    Применить фильтры
+                </button>
+                <button type="button" class="btn-filter btn-secondary" id="resetFilters">
+                    Сбросить
+                </button>
+            </div>
+        </div>
+
+        <div class="reports-table-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h3 style="margin: 0; font-size: 18px; font-weight: 600; color: var(--text);">Операции</h3>
+                <button type="button" class="btn-filter btn-primary" id="exportBtn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: inline-block; vertical-align: middle; margin-right: 6px;">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Экспорт отчетов
+                </button>
+            </div>
+            <table class="reports-table">
+                <thead>
+                    <tr>
+                        <th>Номер телефона</th>
+                        <th>Дата операции</th>
+                        <th>Сумма</th>
+                        <th>Способ оплаты</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="4" class="loading" style="text-align: center; padding: 40px;">
+                            Загрузка операций...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div id="pagination" class="pagination"></div>
+        </div>
+    </main>
+
+    <script src="scripts/auth-header.js"></script>
+    <script src="scripts/reports-payments.js"></script>
 </body>
 </html>

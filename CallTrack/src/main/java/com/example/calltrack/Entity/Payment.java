@@ -34,4 +34,7 @@ public class Payment {
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
+
+    @Column(name = "phone_number", nullable = false)
+    private String phone_number;
 }

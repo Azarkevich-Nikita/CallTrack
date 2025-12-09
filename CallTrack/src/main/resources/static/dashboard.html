@@ -76,9 +76,9 @@
             </div>
         </div>
 
-        <!-- Нижняя секция: Последние сообщения/оплаты и статистика -->
+        <!-- Нижняя секция: Последние операции -->
         <div class="dashboard-bottom">
-            <!-- Последние сообщения/оплаты -->
+            <!-- Последние операции -->
             <div class="transactions-card">
                 <div class="card-header">
                     <h3 class="card-title">Последние операции</h3>
@@ -99,49 +99,6 @@
                         <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </a>
-            </div>
-
-            <!-- Статистика -->
-            <div class="statistics-card">
-                <div class="card-header">
-                    <h3 class="card-title">Статистика</h3>
-                    <a href="reports_calls.html" class="card-link">
-                        Подробнее
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </a>
-                </div>
-                <div class="statistics-summary">
-                    <div class="stat-item">
-                        <span class="stat-label">За день</span>
-                        <span class="stat-value" id="statDaily">0,00 ₽</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">За неделю</span>
-                        <span class="stat-value" id="statWeekly">0,00 ₽</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">За месяц</span>
-                        <span class="stat-value" id="statMonthly">0,00 ₽</span>
-                    </div>
-                </div>
-                <div class="statistics-period">
-                    <select id="statisticsPeriod" class="period-select">
-                        <option value="month">Последний месяц</option>
-                        <option value="week">Последняя неделя</option>
-                        <option value="day">Сегодня</option>
-                    </select>
-                </div>
-                <div class="statistics-chart" id="statisticsChart">
-                    <!-- График статистики будет добавлен динамически -->
-                    <div class="chart-placeholder">
-                        <p>Статистика по категориям</p>
-                        <div class="chart-legend" id="chartLegend">
-                            <!-- Легенда графика -->
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </main>
@@ -206,6 +163,58 @@
             </div>
 
             <div class="modal-footer" id="phoneDetailsFooter"></div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для задолженности -->
+    <div class="modal-backdrop hidden" id="debtModal" role="dialog" aria-modal="true" aria-labelledby="debtModalTitle">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div class="modal-icon" style="background: linear-gradient(135deg, #fef2f2, #fee2e2); color: #dc2626;">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div>
+                    <h2 class="modal-title" id="debtModalTitle">Обнаружена задолженность</h2>
+                    <p class="modal-subtitle">Необходимо погасить задолженность для продолжения работы</p>
+                </div>
+            </div>
+
+            <div class="modal-body">
+                <div class="modal-info-grid">
+                    <div class="info-block" style="grid-column: 1 / -1;">
+                        <span class="info-label">Сумма задолженности</span>
+                        <span class="info-value" id="debtAmount" style="color: var(--error); font-size: 24px;">0,00 $</span>
+                    </div>
+                </div>
+
+                <form id="debtPaymentForm" class="topup-form">
+                    <div class="form-group">
+                        <label for="debtPaymentAmount" class="form-label">Сумма погашения</label>
+                        <div class="input-container">
+                            <input type="number" id="debtPaymentAmount" name="amount" class="form-input" min="0" step="0.01" placeholder="Введите сумму" required>
+                        </div>
+                        <div class="input-hint">Минимальная сумма для погашения задолженности</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="debtPaymentMethod" class="form-label">Способ оплаты</label>
+                        <select id="debtPaymentMethod" name="method" class="form-select" required>
+                            <option value="">Выберите способ</option>
+                            <option value="card">Банковская карта</option>
+                            <option value="transfer">Банковский перевод</option>
+                            <option value="cash">Наличные в офисе</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; gap: 12px;">
+                        <button type="submit" class="btn-action btn-primary" id="debtPaymentSubmit" style="flex: 1;">
+                            Погасить задолженность
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer" id="debtModalFooter"></div>
         </div>
     </div>
 

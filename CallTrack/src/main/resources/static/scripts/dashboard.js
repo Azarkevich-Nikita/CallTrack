@@ -19,6 +19,15 @@ class DashboardManager {
         this.topUpAmountInput = document.getElementById('topUpAmount');
         this.topUpMethodSelect = document.getElementById('topUpMethod');
 
+        this.debtModal = document.getElementById('debtModal');
+        this.debtAmount = document.getElementById('debtAmount');
+        this.debtPaymentForm = document.getElementById('debtPaymentForm');
+        this.debtPaymentAmount = document.getElementById('debtPaymentAmount');
+        this.debtPaymentMethod = document.getElementById('debtPaymentMethod');
+        this.debtPaymentSubmit = document.getElementById('debtPaymentSubmit');
+        this.debtModalFooter = document.getElementById('debtModalFooter');
+        this.currentDebt = null;
+
         this.init();
     }
 
@@ -76,13 +85,6 @@ class DashboardManager {
             });
         }
 
-        // Изменение периода статистики
-        const statisticsPeriod = document.getElementById('statisticsPeriod');
-        if (statisticsPeriod) {
-            statisticsPeriod.addEventListener('change', () => {
-                this.loadStatistics();
-            });
-        }
     }
 
     bindModalEvents() {
@@ -101,8 +103,12 @@ class DashboardManager {
         });
 
         document.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape' && !this.phoneModal.classList.contains('hidden')) {
-                this.closePhoneDetails();
+            if (event.key === 'Escape') {
+                // Закрываем только модальное окно телефона, но не окно задолженности
+                if (!this.phoneModal.classList.contains('hidden')) {
+                    this.closePhoneDetails();
+                }
+                // Модальное окно задолженности нельзя закрыть через ESC
             }
         });
 
@@ -113,17 +119,203 @@ class DashboardManager {
 
     async loadDashboardData() {
         try {
+            // Сначала проверяем задолженность
+            await this.checkDebt();
+            
             // Загружаем данные параллельно
             await Promise.all([
                 this.loadUserData(),
                 this.loadPhoneNumbers(),
-                this.loadRecentTransactions(),
-                this.loadStatistics()
+                this.loadRecentTransactions()
             ]);
         } catch (error) {
             console.error('Ошибка загрузки данных dashboard:', error);
             this.showError('Не удалось загрузить данные. Пожалуйста, обновите страницу.');
         }
+    }
+
+    async checkDebt() {
+        try {
+            const clientId = this.clientId || this.clientData?.clientId;
+            if (!clientId) {
+                return;
+            }
+
+            const response = await fetch(`/api/v1/client/${clientId}/debt`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                // Если нет задолженности или endpoint не найден, просто продолжаем
+                if (this.debtModal) {
+                    this.debtModal.classList.add('hidden');
+                }
+                return;
+            }
+
+            const debtData = await response.json();
+            
+            // Проверяем, есть ли задолженность
+            const debtAmount = debtData.amount || debtData.debtAmount || debtData.debt || 0;
+            
+            if (debtAmount > 0) {
+                this.currentDebt = debtData;
+                this.showDebtModal(debtAmount);
+            } else {
+                if (this.debtModal) {
+                    this.debtModal.classList.add('hidden');
+                }
+            }
+        } catch (error) {
+            console.error('Ошибка проверки задолженности:', error);
+            // В случае ошибки не блокируем работу, просто продолжаем
+        }
+    }
+
+    showDebtModal(debtAmount) {
+        if (!this.debtModal) return;
+
+        if (this.debtAmount) {
+            this.debtAmount.textContent = this.formatCurrency(debtAmount);
+        }
+
+        if (this.debtPaymentAmount) {
+            this.debtPaymentAmount.min = debtAmount;
+            this.debtPaymentAmount.value = debtAmount;
+        }
+
+        this.debtModal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+
+        // Блокируем закрытие модального окна кликом вне его
+        const handleDebtModalClick = (event) => {
+            if (event.target === this.debtModal) {
+                event.stopPropagation();
+                event.preventDefault();
+            }
+        };
+        
+        // Удаляем старый обработчик, если он был
+        this.debtModal.removeEventListener('click', this.debtModalClickHandler);
+        this.debtModalClickHandler = handleDebtModalClick;
+        this.debtModal.addEventListener('click', this.debtModalClickHandler);
+
+        // Настраиваем обработчик формы погашения
+        if (this.debtPaymentForm) {
+            this.debtPaymentForm.onsubmit = (e) => {
+                e.preventDefault();
+                this.handleDebtPayment();
+            };
+        }
+    }
+
+    async handleDebtPayment() {
+        if (!this.debtPaymentForm || !this.currentDebt) {
+            return;
+        }
+
+        const amountValue = parseFloat(this.debtPaymentAmount?.value || '0');
+        const methodValue = this.debtPaymentMethod?.value || '';
+
+        if (!Number.isFinite(amountValue) || amountValue <= 0) {
+            this.setDebtModalFooter('Введите корректную сумму для погашения', 'error');
+            return;
+        }
+
+        const debtAmount = this.currentDebt.amount || this.currentDebt.debtAmount || this.currentDebt.debt || 0;
+        if (amountValue < debtAmount) {
+            this.setDebtModalFooter(`Минимальная сумма для погашения: ${this.formatCurrency(debtAmount)}`, 'error');
+            return;
+        }
+
+        if (!methodValue) {
+            this.setDebtModalFooter('Выберите способ оплаты', 'error');
+            return;
+        }
+
+        this.setDebtPaymentLoading(true);
+        this.setDebtModalFooter('Выполняем погашение задолженности...', 'info');
+
+        const clientId = this.clientId || this.userData?.clientId;
+
+        const payload = {
+            amount: amountValue,
+            paymentType: methodValue,
+            clientId: +clientId
+        };
+
+        try {
+            const response = await fetch(`/api/v1/payments`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || 'Не удалось выполнить погашение задолженности');
+            }
+
+            this.setDebtModalFooter('Задолженность успешно погашена', 'success');
+            
+            // Закрываем модальное окно через 2 секунды
+            setTimeout(() => {
+                this.closeDebtModal();
+                // Перезагружаем данные
+                this.loadDashboardData();
+            }, 2000);
+        } catch (error) {
+            console.error('Ошибка погашения задолженности:', error);
+            this.setDebtModalFooter(error.message || 'Не удалось выполнить погашение задолженности', 'error');
+        } finally {
+            this.setDebtPaymentLoading(false);
+        }
+    }
+
+    setDebtPaymentLoading(isLoading) {
+        if (!this.debtPaymentSubmit) {
+            return;
+        }
+
+        if (!this.debtPaymentSubmit.dataset.originalText) {
+            this.debtPaymentSubmit.dataset.originalText = this.debtPaymentSubmit.textContent.trim();
+        }
+
+        this.debtPaymentSubmit.disabled = isLoading;
+        this.debtPaymentSubmit.textContent = isLoading ? 'Погашение...' : this.debtPaymentSubmit.dataset.originalText;
+    }
+
+    setDebtModalFooter(message, type = '') {
+        if (!this.debtModalFooter) {
+            return;
+        }
+
+        this.debtModalFooter.textContent = message;
+        this.debtModalFooter.classList.remove('success', 'error');
+
+        if (type === 'success') {
+            this.debtModalFooter.classList.add('success');
+        } else if (type === 'error') {
+            this.debtModalFooter.classList.add('error');
+        }
+    }
+
+    closeDebtModal() {
+        if (!this.debtModal) {
+            return;
+        }
+
+        this.debtModal.classList.add('hidden');
+        document.body.style.overflow = '';
+        this.currentDebt = null;
+        
+        if (this.debtPaymentForm) {
+            this.debtPaymentForm.reset();
+        }
+        this.setDebtModalFooter('');
     }
 
     async loadUserData() {
@@ -597,8 +789,7 @@ class DashboardManager {
             await Promise.all([
                 this.loadPhoneNumbers(),
                 this.loadUserData(),
-                this.loadRecentTransactions(),
-                this.loadStatistics()
+                this.loadRecentTransactions()
             ]);
 
             // Обновляем модальное окно, если оно открыто
@@ -797,97 +988,6 @@ class DashboardManager {
         return methodMap[lowerMethod] || method;
     }
 
-    async loadStatistics() {
-        try {
-            const period = document.getElementById('statisticsPeriod')?.value || 'month';
-            const clientId = this.clientId || this.userData?.clientId;
-            if (!clientId) {
-                this.renderStatistics({
-                    daily: 0,
-                    weekly: 0,
-                    monthly: 0,
-                    categories: []
-                });
-                return;
-            }
-
-            let response = await fetch(`/api/v1/clients/${clientId}/statistics?period=${period}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!response.ok) {
-                response = await fetch(`/api/v1/reports/statistics?clientId=${clientId}&period=${period}`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (!response.ok) {
-                    this.renderStatistics({
-                        daily: 0,
-                        weekly: 0,
-                        monthly: 0,
-                        categories: []
-                    });
-                    return;
-                }
-            }
-
-            const statistics = await response.json();
-            const formattedStats = this.formatStatistics(statistics, period);
-            this.renderStatistics(formattedStats);
-        } catch (error) {
-            console.error('Ошибка загрузки статистики:', error);
-            this.renderStatistics({
-                daily: 0,
-                weekly: 0,
-                monthly: 0,
-                categories: []
-            });
-        }
-    }
-
-    formatStatistics(statistics, period) {
-        // Преобразуем статистику в унифицированный формат
-        return {
-            daily: statistics.daily || statistics.day || statistics.today || 0,
-            weekly: statistics.weekly || statistics.week || statistics.thisWeek || 0,
-            monthly: statistics.monthly || statistics.month || statistics.thisMonth || 0,
-            categories: statistics.categories || statistics.expenses || statistics.byCategory || []
-        };
-    }
-
-    renderStatistics(statistics) {
-        // Обновляем краткую статистику
-        const statDaily = document.getElementById('statDaily');
-        const statWeekly = document.getElementById('statWeekly');
-        const statMonthly = document.getElementById('statMonthly');
-
-        if (statDaily) statDaily.textContent = this.formatCurrency(statistics.daily || 0);
-        if (statWeekly) statWeekly.textContent = this.formatCurrency(statistics.weekly || 0);
-        if (statMonthly) statMonthly.textContent = this.formatCurrency(statistics.monthly || 0);
-
-        // Отображаем легенду графика
-        const chartLegend = document.getElementById('chartLegend');
-        if (chartLegend && statistics.categories) {
-            if (statistics.categories.length === 0) {
-                chartLegend.innerHTML = '<p>Нет данных для отображения</p>';
-                return;
-            }
-
-            chartLegend.innerHTML = statistics.categories.map(category => `
-                <div class="legend-item">
-                    <span class="legend-dot" style="background-color: ${category.color || '#6b7280'}"></span>
-                    <span>${category.name || 'Категория'}</span>
-                    <span style="margin-left: auto; font-weight: 600;">${this.formatCurrency(category.amount || 0)}</span>
-                </div>
-            `).join('');
-        }
-    }
 
     formatCurrency(amount) {
         return new Intl.NumberFormat('en-US', {

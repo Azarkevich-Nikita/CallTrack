@@ -206,7 +206,11 @@ class RegistrationManager {
         try {
             const message = await this.submitStandardRegistration();
             
-            this.showNotification(message, true);
+            // После успешной регистрации автоматически входим
+            this.showNotification('Регистрация успешна! Выполняется вход...', true);
+            
+            // Выполняем автоматический вход (не сбрасываем loading, так как идет перенаправление)
+            await this.autoLogin();
         } catch (error) {
             console.error('Ошибка регистрации:', error);
             
@@ -219,7 +223,6 @@ class RegistrationManager {
             }
             
             this.showNotification(errorMessage, false);
-        } finally {
             this.setLoading(false);
         }
         
@@ -279,6 +282,95 @@ class RegistrationManager {
             }
         } else {
             return responseText || 'Регистрация успешно завершена!';
+        }
+    }
+
+    async autoLogin() {
+        const email = this.emailInput.value.trim();
+        const password = this.passwordInput.value;
+
+        const formData = {
+            email: email,
+            password: password
+        };
+
+        try {
+            let response = await fetch('/api/v1/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+
+            if (response.status === 404) {
+                response = await fetch('/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+            }
+
+            const responseText = await response.text();
+            let responseData;
+            const contentType = response.headers.get('content-type') || '';
+            
+            if (contentType.includes('application/json') && responseText.trim()) {
+                try {
+                    responseData = JSON.parse(responseText);
+                } catch (e) {
+                    throw new Error('Ошибка при автоматическом входе');
+                }
+            } else {
+                throw new Error('Ошибка при автоматическом входе');
+            }
+
+            if (!response.ok) {
+                throw new Error('Не удалось выполнить автоматический вход');
+            }
+
+            // Сохраняем данные пользователя
+            if (responseData && responseData.clientId) {
+                localStorage.setItem('clientId', responseData.clientId);
+                localStorage.setItem('clientData', JSON.stringify({
+                    clientId: responseData.clientId,
+                    fullName: responseData.fullName,
+                    email: responseData.email,
+                    balance: responseData.balance,
+                    status: responseData.status
+                }));
+                if (responseData.email) {
+                    localStorage.setItem('clientEmail', responseData.email);
+                }
+                if (responseData.status) {
+                    localStorage.setItem('clientStatus', responseData.status);
+                }
+            } else if (responseData && Object.keys(responseData).length > 0) {
+                localStorage.setItem('clientId', responseData.clientId || responseData.id);
+                localStorage.setItem('clientData', JSON.stringify(responseData));
+                if (responseData.email) {
+                    localStorage.setItem('clientEmail', responseData.email);
+                }
+                if (responseData.status) {
+                    localStorage.setItem('clientStatus', responseData.status);
+                }
+            }
+
+            // Перенаправляем в личный кабинет
+            setTimeout(() => {
+                const status = (responseData?.status || localStorage.getItem('clientStatus') || '').toString().trim().toUpperCase();
+                const redirectUrl = status === 'ADMIN' ? 'admin.html' : 'dashboard.html';
+                window.location.href = redirectUrl;
+            }, 1000);
+        } catch (error) {
+            console.error('Ошибка автоматического входа:', error);
+            // Если автоматический вход не удался, просто показываем сообщение об успешной регистрации
+            this.showNotification('Регистрация успешна! Теперь вы можете войти в систему.', true);
+            this.setLoading(false);
         }
     }
 

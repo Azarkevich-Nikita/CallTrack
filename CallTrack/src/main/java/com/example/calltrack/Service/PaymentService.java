@@ -41,6 +41,7 @@ public class PaymentService {
                 .balanceAfter(clientService.getBalanceAfter(paymentRequestDTO.getClientId()))
                 .createdAt(LocalDateTime.now())
                 .paymentMethod(paymentRequestDTO.getPaymentType())
+                .phone_number(phoneNumberService.getPhoneNumberById(paymentRequestDTO.getPhoneId()))
                 .build();
 
         paymentsRepository.save(peyment);

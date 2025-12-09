@@ -48,14 +48,33 @@ public class PhoneNumberService {
                 .map(PhoneNumber::getClient);
     }
 
-    public ResponseEntity<String> deletePhoneNumber(Long id) {
-        return phoneNumberRepository.findById(id)
-                .map(phone -> {
-                    phoneNumberRepository.delete(phone);
-                    return ResponseEntity.ok("Phone number deleted successfully");
-                })
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<String> deletePhoneNumber(Long phoneNumberId) {
+
+        PhoneNumber phone = phoneNumberRepository.findById(phoneNumberId)
+                .orElse(null);
+
+        if (phone == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        List<PhoneNumber> phoneNumbers =
+                phoneNumberRepository.findAllByClient_ClientId(phone.getClient().getClientId());
+
+        phoneNumbers.remove(phone);
+
+        if (!phoneNumbers.isEmpty()) {
+            PhoneNumber receiver = phoneNumbers.get(0);
+            receiver.setNumberBalance(
+                    receiver.getNumberBalance().add(phone.getNumberBalance())
+            );
+            phoneNumberRepository.save(receiver);
+        }
+
+        phoneNumberRepository.delete(phone);
+
+        return ResponseEntity.ok("Phone number deleted successfully");
     }
+
 
     public ResponseEntity<String> registerPhoneNumber(PhoneNumberRequestDTO phoneNumberRequestDTO) {
         Client client = clientService.findClientById(phoneNumberRequestDTO.getClientId())
@@ -99,6 +118,12 @@ public class PhoneNumberService {
 
     public Tarif getTarifByNumber(String number) {
         return phoneNumberRepository.findByPhone(number).get().getTarif();
+    }
+    public PhoneNumber getByPhoneId(Long phone_id) {
+        return phoneNumberRepository.findById(phone_id).orElseThrow();
+    }
+    public String getPhoneNumberById(Long phone_id) {
+        return phoneNumberRepository.findById(phone_id).get().getPhone();
     }
 
 }
