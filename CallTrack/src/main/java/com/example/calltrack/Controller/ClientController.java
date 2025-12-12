@@ -36,4 +36,9 @@ public class ClientController {
         return ResponseEntity.ok(paymentService.getPaymentsByClientId(id));
     }
 
+//    @GetMapping("/clients/{id}/debt")
+//    public Bool getRecentPayments(@PathVariable Long id) {
+//        return ResponseEntity.ok(paymentService.getPaymentsByClientId(id));
+//    }
+
 }

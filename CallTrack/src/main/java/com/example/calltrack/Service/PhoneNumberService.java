@@ -6,6 +6,7 @@ import com.example.calltrack.Entity.PhoneNumber;
 import com.example.calltrack.Entity.Tarif;
 import com.example.calltrack.Repository.PhoneNumberRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -77,6 +78,9 @@ public class PhoneNumberService {
 
 
     public ResponseEntity<String> registerPhoneNumber(PhoneNumberRequestDTO phoneNumberRequestDTO) {
+        if(phoneNumberRepository.findByPhone(phoneNumberRequestDTO.getPhone()).isPresent()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Your phone number is already in use");
+        }
         Client client = clientService.findClientById(phoneNumberRequestDTO.getClientId())
                 .orElseThrow(() -> new RuntimeException("Client not found"));
 
