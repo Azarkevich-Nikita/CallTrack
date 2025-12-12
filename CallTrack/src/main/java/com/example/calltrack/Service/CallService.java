@@ -28,6 +28,9 @@ public class CallService {
     }
 
     public ResponseEntity<Call> addCall(CallRequestDTO call) {
+        if(phoneNumberService.getByPhone(call.getPhoneNumber())==null){
+            return ResponseEntity.notFound().build();
+        }
         try{
             Call currentCall = Call.builder()
                     .phoneNumber(phoneNumberService.getByPhone(call.getPhoneNumber()))

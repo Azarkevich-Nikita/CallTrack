@@ -65,7 +65,6 @@
     
         const tr = document.createElement("tr");
         tr.innerHTML = `
-            <td>${call.startedAt ?? "-"}</td>
             <td>${call.phoneNumber.phone ?? "-"}</td>
             <td>${call.callType ?? call.type ?? "-"}</td>
             <td>${call.durationMinutes ?? "-"}</td>
@@ -134,7 +133,7 @@
         if (type === "calls") {
             reportsHead.innerHTML = `
                 <tr>
-                    <th>Дата</th><th>Номер</th><th>Тип</th><th>Мин</th><th>Стоимость</th>
+                    <th>Номер</th><th>Тип</th><th>Мин</th><th>Стоимость</th>
                 </tr>`;
             reportsBody.innerHTML = `<tr><td colspan="5" class="table-placeholder">Нет данных</td></tr>`;
         }
