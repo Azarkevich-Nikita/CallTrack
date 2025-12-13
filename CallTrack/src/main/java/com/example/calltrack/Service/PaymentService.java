@@ -6,6 +6,7 @@ import com.example.calltrack.Entity.Payment;
 import com.example.calltrack.Repository.PaymentsRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -26,31 +27,37 @@ public class PaymentService {
         this.clientService = clientService;
     }
 
+    @Transactional
     public ResponseEntity<String> addPaymentsOnNumber(PaymentRequestDTO paymentRequestDTO) {
-        boolean response = phoneNumberService.updatePhoneNumberBalance(paymentRequestDTO.getPhoneId(), paymentRequestDTO.getAmount());
-        if (response) {
-            response = clientService.updatePhoneBalance(paymentRequestDTO.getClientId(), paymentRequestDTO.getAmount());
-        }
+
+        phoneNumberService.updatePhoneNumberBalance(paymentRequestDTO.getPhoneId(), paymentRequestDTO.getAmount());
+        clientService.updatePhoneBalance(paymentRequestDTO.getClientId(), paymentRequestDTO.getAmount());
 
         Client client = clientService.findClientById(paymentRequestDTO.getClientId())
-                .orElseThrow(() -> new RuntimeException("Client not found"));
+                .orElseThrow(() -> new RuntimeException("Client not found after update"));
 
-        Payment peyment = Payment.builder()
+        Payment payment = Payment.builder()
                 .client(client)
                 .amount(paymentRequestDTO.getAmount())
-                .balanceAfter(clientService.getBalanceAfter(paymentRequestDTO.getClientId()))
+                .balanceAfter(client.getBalance())
                 .createdAt(LocalDateTime.now())
                 .paymentMethod(paymentRequestDTO.getPaymentType())
                 .phone_number(phoneNumberService.getPhoneNumberById(paymentRequestDTO.getPhoneId()))
                 .build();
 
-        paymentsRepository.save(peyment);
-        return response ? ResponseEntity.ok("Add phone number successfully") : ResponseEntity.badRequest().build();
+        paymentsRepository.save(payment);
+
+        return ResponseEntity.ok("Add phone number successfully");
     }
+
 
     public List<Payment> getPaymentsByClientId(Long clientId) {
         List<Payment> payments =  paymentsRepository.findAllByClient_ClientId(clientId);
         payments.sort(Comparator.comparing(Payment::getCreatedAt).reversed());
         return payments;
+    }
+
+    public List<Payment> getAllPayments() {
+        return paymentsRepository.findAll();
     }
 }

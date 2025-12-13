@@ -99,21 +99,13 @@ public class PhoneNumberService {
     }
 
     @Transactional
-    public boolean updatePhoneNumberBalance(Long phone_id, BigDecimal amount) {
-        try {
-            PhoneNumber current_phone = phoneNumberRepository.findById(phone_id).orElseThrow();
+    public void updatePhoneNumberBalance(Long phone_id, BigDecimal amount) {
+        PhoneNumber current_phone = phoneNumberRepository.findById(phone_id)
+                .orElseThrow(() -> new RuntimeException("Phone number not found with ID: " + phone_id));
 
-            current_phone.setNumberBalance(
-                    current_phone.getNumberBalance().add(amount)
-            );
-
-            phoneNumberRepository.save(current_phone);
-
-            return true;
-        }
-        catch (Exception e) {
-            return false;
-        }
+        current_phone.setNumberBalance(
+                current_phone.getNumberBalance().add(amount)
+        );
     }
 
     public PhoneNumber getByPhone(String phone) {

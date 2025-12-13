@@ -31,14 +31,24 @@ public class ClientController {
         return  clientService.loginClient(clientRequestDTO);
     }
 
+    @GetMapping("/clients/payments/recent")
+    public ResponseEntity<List<Payment>> getAllPayments() {
+        return ResponseEntity.ok(paymentService.getAllPayments());
+    }
+
     @GetMapping("/clients/{id}/payments/recent")
     public ResponseEntity<List<Payment>> getRecentPayments(@PathVariable Long id) {
         return ResponseEntity.ok(paymentService.getPaymentsByClientId(id));
     }
 
-//    @GetMapping("/clients/{id}/debt")
-//    public Bool getRecentPayments(@PathVariable Long id) {
-//        return ResponseEntity.ok(paymentService.getPaymentsByClientId(id));
-//    }
+    @GetMapping("/clients/debts")
+    public List<Client> getRecentPayments() {
+        return clientService.getDebtsClients();
+    }
+
+    @GetMapping("/clients/{id}/debt")
+    public Boolean isDebtClient(@PathVariable Long id) {
+        return clientService.checkDebtClient(id);
+    }
 
 }

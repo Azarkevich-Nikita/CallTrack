@@ -14,7 +14,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ClientService {
@@ -86,16 +88,31 @@ public class ClientService {
     }
 
     @Transactional
-    public boolean updatePhoneBalance(Long client_id, BigDecimal amount) {
-        Client client = clientRepository.findById(client_id).orElse(null);
-        if (client != null) {
-            client.setBalance(client.getBalance().add(amount));
-            clientRepository.save(client);
-        }
-        else  {
-            return false;
-        }
-        return true;
+    public void updatePhoneBalance(Long client_id, BigDecimal amount) {
+        Client client = clientRepository.findById(client_id)
+                .orElseThrow(() -> new RuntimeException("Client not found with ID: " + client_id));
+
+        client.setBalance(client.getBalance().add(amount));
     }
 
+    public List<Client> getDebtsClients() {
+        return clientRepository.findAll().stream()
+                .filter(c -> c.getBalance().compareTo(BigDecimal.ZERO) > 0)
+                .collect(Collectors.toList());
+    }
+
+    public Boolean checkDebtClient(Long id) {
+        Optional<Client> clientOpt = clientRepository.findById(id);
+
+        if (clientOpt.isPresent()) {
+            BigDecimal balance = clientOpt.get().getBalance();
+            if (balance != null) {
+                return balance.compareTo(BigDecimal.ZERO) < 0;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
 }

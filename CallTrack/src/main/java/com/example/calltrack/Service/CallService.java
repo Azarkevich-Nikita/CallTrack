@@ -6,6 +6,10 @@ import com.example.calltrack.Repository.CallRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import com.example.calltrack.Entity.Call;
+import com.example.calltrack.Entity.PhoneNumber;
+import com.example.calltrack.Entity.Tarif;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.Comparator;
@@ -27,26 +31,42 @@ public class CallService {
         return calls;
     }
 
-    public ResponseEntity<Call> addCall(CallRequestDTO call) {
-        if(phoneNumberService.getByPhone(call.getPhoneNumber())==null){
+    @Transactional // Добавляем транзакцию
+    public ResponseEntity<Call> addCall(CallRequestDTO callRequestDTO) {
+        String phoneNumberStr = callRequestDTO.getPhoneNumber();
+
+        // 1. Получаем номер телефона ОДИН раз
+        PhoneNumber existingPhoneNumber = phoneNumberService.getByPhone(phoneNumberStr);
+
+        if (existingPhoneNumber == null) {
             return ResponseEntity.notFound().build();
         }
-        try{
-            Call currentCall = Call.builder()
-                    .phoneNumber(phoneNumberService.getByPhone(call.getPhoneNumber()))
-                    .startedAt(call.getStartDate().atStartOfDay())
-                    .callType(call.getCallType())
-                    .tarif(phoneNumberService.getTarifByNumber(call.getPhoneNumber()))
-                    .cost(phoneNumberService.getTarifByNumber(call.getPhoneNumber()).getPricePerMinute()
-                            .multiply(BigDecimal.valueOf(call.getDurationMinutes())))
-                    .durationMinutes(call.getDurationMinutes())
-                    .build();
-            callRepository.save(currentCall);
-            return  new ResponseEntity<>(currentCall, HttpStatus.CREATED);
 
-        }
-        catch (Exception e){
+        // 2. Получаем тариф ОДИН раз из уже загруженного объекта
+        // Убедитесь, что у сущности PhoneNumber есть метод getTarif()
+        Tarif tariff = existingPhoneNumber.getTarif();
+
+        if (tariff == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+
+        // 3. Рассчитываем стоимость ОДИН раз
+        BigDecimal cost = tariff.getPricePerMinute()
+                .multiply(BigDecimal.valueOf(callRequestDTO.getDurationMinutes()));
+
+        // 4. Создаем объект и сохраняем его
+        Call currentCall = Call.builder()
+                .phoneNumber(existingPhoneNumber) // Используем переменную
+                .startedAt(callRequestDTO.getStartDate().atStartOfDay())
+                .callType(callRequestDTO.getCallType())
+                .tarif(tariff) // Используем переменную
+                .cost(cost)    // Используем переменную
+                .durationMinutes(callRequestDTO.getDurationMinutes())
+                .build();
+
+        callRepository.saveAndFlush(currentCall);
+
+        return new ResponseEntity<>(currentCall, HttpStatus.CREATED);
     }
+
 }
